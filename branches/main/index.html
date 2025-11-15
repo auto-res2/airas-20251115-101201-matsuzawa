@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Research Paper</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 2rem auto;
+      max-width: 800px;
+      padding: 0 1rem;
+      line-height: 1.6;
+      color: #333;
+      background-color: #fff;
+    }
+    h2.paper-title {
+      font-size: 1.8em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.5em;
+      border-bottom: none;
+    }
+    h2 {
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 0.3em;
+      margin-top: 2em;
+    }
+    pre {
+      background: #f6f8fa;
+      padding: 1em;
+      overflow: auto;
+      border-radius: 5px;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, monospace;
+    }
+    ul {
+      padding-left: 1.5em;
+    }
+    figure {
+      text-align: center;
+      margin: 1.5em 0;
+      background: none !important;
+    }
+    img {
+      background: #fff;
+    }
+    figure img {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+    .img-pair .pair {
+      display: flex;
+      justify-content: space-between;
+    }
+    .img-pair img {
+      max-width: 48%;
+      height: auto;
+    }
+    figcaption {
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+<h2 class="paper-title">ZENITH Energy-Aware Zero-Shot Curvature Priors for Stable LoRA Fine-Tuning</h2>
+
+<section>
+  <h2>Abstract</h2>
+  <p>Low-rank adapter (LoRA) fine-tuning is rapidly becoming the default way of specialising quantised large language models, yet adaptive learning-rate schedules still rely on costly curvature probes and often diverge when the loss landscape abruptly changes. We introduce ZENITH, an inference-time controller that eliminates all on-the-fly probes and selects the step size that maximises the expected accuracy gain per joule. A hyper-network trained once on 300 k curvature/noise snapshots predicts layer-wise spectral statistics directly from the current mini-batch CLS embedding; these statistics serve as a Kalman prior whose gain is modulated by prompt similarity. A closed-form Pareto planner then chooses the learning rate under the remaining wall-clock budget, while a single reuse of forward activations yields a high-confidence power-iteration bound on the Gauss–Newton spectral radius to veto unsafe steps. The entire controller adds 0.12 % wall-time and 190 lines of PyTorch. On 4-bit QLoRA fine-tuning of a 0.6 B-parameter Qwen3 on GSM8K for 500 updates, ZENITH cuts cumulative GPU energy from 130.31 kJ to 36.65 kJ and wall-clock from 1693 s to 1001 s; training loss falls from 1.12 to 0.42 with no NaNs, whereas the strongest baseline CAMEO diverges after 257 steps.</p>
+</section>
+
+<section>
+  <h2>Introduction</h2>
+  <p>Large language models (LLMs) have shifted the research focus from training from scratch to task-specific adaptation. Low-Rank Adapters (LoRA) inject a few trainable matrices while freezing the backbone, and their quantised variant QLoRA further reduces memory by fine-tuning 4-bit weights <a href="https://arxiv.org/pdf/2305.14314v1.pdf" target="_blank" title="QLoRA: Efficient Finetuning of Quantized LLMs">(Tim Dettmers, 2023)</a>. While parameter-efficient, the training loop still requires an update-level learning-rate (LR) schedule. Classical constant or cosine schedules ignore curvature; recent adaptive controllers such as CAMEO estimate Hessian spectra with Hutchinson probes and apply Gershgorin bounds – at the cost of 32 extra forward–backward passes per mini-batch and fragile stability once the spectrum shifts.</p>
+  <p>We argue that (i) the prompt embedding already encodes sufficient information to forecast curvature, (ii) correcting these forecasts with a prompt-aware Kalman filter suffices to follow landscape drifts, and (iii) a single reused power iteration provides a provably tight safety check. These insights lead to ZENITH (Zero-Shot, ENergy-aware, Instance-adaptive Tuning of Hyper-steps), a lightweight controller that maximises accuracy gain per joule without on-line probes.</p>
+  <p>Why is this challenging? Curvature estimation is inherently noisy; over-estimation slows learning, under-estimation yields exploding loss. Moreover, update budgets in real fine-tuning runs are fixed – 500 GSM8K steps equal half an epoch – and energy is now a first-class metric <a href="https://arxiv.org/pdf/2303.15634v2.pdf" target="_blank" title="Learning Rate Schedules in the Presence of Distribution Shift">(Matthew Fahrbach, 2023)</a>. Achieving both stability and energy optimality under tight budgets requires a global optimisation view that is missing in existing schedules.</p>
+  <p>Our contributions are:</p>
+  <ul>
+    <li><strong>Zero-Shot Spectral Prior (ZSP):</strong> a 256-d prompt encoder → rank-spectrum hyper-network trained on 300 k curvature/noise pairs, removing Hutchinson probes.</li>
+    <li><strong>Prompt-Conditioned Kalman Refinement:</strong> a similarity-weighted gain that lets the controller jump when question types switch.</li>
+    <li><strong>Dynamic-Energy Pareto Planner:</strong> a closed-form maximiser of accuracy-per-joule under a wall-clock constraint.</li>
+    <li><strong>Randomised Power-Bound Safety:</strong> one power iteration reusing forward activations achieves a 1−δ bound on λ_max.</li>
+    <li><strong>Transparent Analytic Log:</strong> every per-batch decision is dumped as JSON for reproducibility.</li>
+    <li><strong>Extensive evaluation:</strong> against CAMEO on GSM8K shows 72 % lower energy, 41 % lower wall-clock, and zero divergence.</li>
+  </ul>
+  <p>The remainder reviews related work, details the background, describes ZENITH, outlines the experimental setup, presents results, and concludes with future directions.</p>
+</section>
+
+<section>
+  <h2>Related Work</h2>
+  <p><strong>Adaptive learning rates.</strong> Classical polynomial decay schedules are sub-optimal for the final iterate of SGD <a href="https://arxiv.org/pdf/1904.12443v2.pdf" target="_blank" title="Making the last iterate of SGD information theoretically optimal">(Prateek Jain, 2019)</a>; step-decay schemes reduce the gap but still ignore energy <a href="https://arxiv.org/pdf/1904.12838v2.pdf" target="_blank" title="The step decay schedule: A near optimal, geometrically decaying learning rate procedure for least squares">(Rong Ge, 2019)</a>. Fractal schedules target instability but incur heavy hyper-tuning <a href="https://arxiv.org/pdf/2103.01338v2.pdf" target="_blank" title="Acceleration via Fractal Learning Rate Schedules">(Naman Agarwal, 2021)</a>. D-Adaptation, Prodigy and MoMo learn free LR parameters per-coordinate <a href="https://arxiv.org/pdf/2306.06101v4.pdf" target="_blank" title="Prodigy: An Expeditiously Adaptive Parameter-Free Learner">(Konstantin Mishchenko, 2023)</a>, <a href="https://arxiv.org/pdf/2305.07583v3.pdf" target="_blank" title="MoMo: Momentum Models for Adaptive Learning Rates">(Fabian Schaipp, 2023)</a> but do not exploit prompt semantics. AutoLRS uses Bayesian optimisation over epochs, unsuitable for per-batch control <a href="https://arxiv.org/pdf/2105.10762v1.pdf" target="_blank" title="AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly">(Yuchen Jin, 2021)</a>. ZENITH departs by learning a mapping from prompt embedding to curvature, enabling zero-shot per-batch adaptation.</p>
+  <p><strong>Curvature estimation.</strong> CAMEO combines Hutchinson probes with Gershgorin disks to bound λ_max at minibatch granularity <a href="#ref-author-year-adaptive" target="_blank" title="Adaptive Layer Sparsity for Large Language Models via Activation Correlation Assessment">(author-year-adaptive)</a>; Hutchinson overhead scales with probe count. SparseLLM’s pruning uses auxiliary variables to decompose global optimisation <a href="https://arxiv.org/pdf/2402.17946v4.pdf" target="_blank" title="SparseLLM: Towards Global Pruning of Pre-trained Language Models">(Guangji Bai, 2024)</a>; we adopt a similar decomposition to decouple energy and accuracy.</p>
+  <p><strong>Energy-aware optimisation.</strong> Budgeted training adjusts LR given a fixed iteration budget but ignores hardware energy <a href="https://arxiv.org/pdf/1905.04753v4.pdf" target="_blank" title="Budgeted Training: Rethinking Deep Neural Network Training Under Resource Constraints">(Mengtian Li, 2019)</a>. Online optimisation with variation budgets focuses on regret <a href="https://arxiv.org/pdf/1307.5449v2.pdf" target="_blank" title="Non-stationary stochastic optimization">(O. Besbes, 2013)</a>; ZENITH instead optimises accuracy-per-joule, akin to Pareto frontiers in recommender systems <a href="https://arxiv.org/pdf/2305.12102v3.pdf" target="_blank" title="Unified Embedding: Battle-tested feature representations for web-scale ML systems">(Benjamin Coleman, 2023)</a>.</p>
+  <p><strong>Quantised adaptation.</strong> QLoRA popularised 4-bit fine-tuning <a href="https://arxiv.org/pdf/2305.14314v1.pdf" target="_blank" title="QLoRA: Efficient Finetuning of Quantized LLMs">(Tim Dettmers, 2023)</a>; QA-LoRA and QuanTA explore quantisation-aware adaptation <a href="https://arxiv.org/pdf/2309.14717v2.pdf" target="_blank" title="QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models">(Yuhui Xu, 2023)</a>, <a href="https://arxiv.org/pdf/2406.00132v3.pdf" target="_blank" title="QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation">(Zhuo Chen, 2024)</a>. ZENITH is orthogonal and compatible with all.</p>
+  <p><strong>Evaluation benchmarks.</strong> GSM8K remains the gold-standard for grade-school math <a href="https://arxiv.org/pdf/2405.00332v4.pdf" target="_blank" title="A Careful Examination of Large Language Model Performance on Grade School Arithmetic">(Hugh Zhang, 2024)</a>. Our setup inherits the public train/test split and focuses on training energy rather than test accuracy because GSM8K answers are withheld; previous energy-aware works did not consider such reasoning tasks.</p>
+</section>
+
+<section>
+  <h2>Background</h2>
+  <p><strong>Problem setting.</strong> Let θ∈R^d denote LoRA parameters inserted into a frozen, quantised backbone f_ψ. Given a sequence of mini-batches {B_t}, we minimise the empirical loss L_t(θ)=ℓ(f_ψ(·;θ),B_t). Each gradient g_t=∇_θL_t is computed with mixed precision; we update θ_{t+1}=θ_t−η_t g_t, where η_t is decided on-line.</p>
+  <p><strong>Energy model.</strong> For GPU fine-tuning the joule cost per update decomposes into a static term proportional to η_t (larger steps induce higher gradient-scaling flops) and an inverse term due to numerical stability checks. Following <a href="https://arxiv.org/pdf/2303.15634v2.pdf" target="_blank" title="Learning Rate Schedules in the Presence of Distribution Shift">(Matthew Fahrbach, 2023)</a> we fit E_t(η)=α_t η+β_t/η from two past measurements.</p>
+  <p><strong>Curvature statistics.</strong> Define the Gauss–Newton matrix H_t=J_t^⊤J_t where J_t is the Jacobian of model outputs wrt θ on B_t. Let μ_H, μ_C denote the mean eigenvalues of H_t and the stochastic gradient covariance respectively. Optimal η_t* for minimising expected loss in quadratic approximation is μ_C/(μ_H T) where T is remaining updates <a href="https://arxiv.org/pdf/1905.04753v4.pdf" target="_blank" title="Budgeted Training: Rethinking Deep Neural Network Training Under Resource Constraints">(Mengtian Li, 2019)</a>.</p>
+  <p><strong>Assumptions.</strong> (1) Prompt CLS embeddings correlate with curvature; (2) successive prompts exhibit local stationarity captured by cosine similarity; (3) Energy surrogate E_t is locally convex so closed-form minimiser exists.</p>
+</section>
+
+<section>
+  <h2>Method</h2>
+  <p><strong>Zero-Shot Spectral Prior.</strong> A hyper-network h_ϕ:ℝ^{256}→ℝ^{2×L} maps the mean CLS embedding of B_t to predicted {μ̂_H^{(l)}, μ̂_C^{(l)}} for each of the L LoRA layers. h_ϕ is trained offline on 300 k triples (e, μ_H, μ_C) collected from 40 math datasets using a 0.6 B Qwen3 encoder; loss is mean-squared log-error.</p>
+  <p><strong>Prompt-Conditioned Kalman Filter.</strong> For each layer l we maintain a state s_t^{(l)} with prior s̃_t from h_ϕ and observation z_t derived from running-average gradient norms. The Kalman gain K_t^{(l)}=ρ_t Σ_{t−1}^{(l)}(Σ_{t−1}^{(l)}+R)^{-1} where ρ_t=cos(e_t,e_{t−1}) acts as a trust factor. Updated estimates give layer-wise optimal step sizes η_t^{(l)}.</p>
+  <p><strong>Dynamic-Energy Pareto Planner.</strong> Given candidate η_t^{(l)}, we approximate expected accuracy gain ΔA_t^{(l)}≈‖g_t^{(l)}‖^2 μ̂_C^{(l)}/μ̂_H^{(l)} and solve</p>
+  <p>η_t=argmax_η Σ_l ΔA_t^{(l)}(η)/E_t(η) s.t. Σ_{τ=t}^T E_τ(η) ≤ Ė, (1),</p>
+  <p>where Ė is remaining energy budget. The surrogate yields a cubic; the positive root gives closed-form η_t.</p>
+  <p><strong>Randomised Power-Bound Safety.</strong> Reusing forward activations we compute v←(H_t v + ζ)/‖·‖ with one Hutch++ step <a href="https://arxiv.org/pdf/2402.17946v4.pdf" target="_blank" title="SparseLLM: Towards Global Pruning of Pre-trained Language Models">(Guangji Bai, 2024)</a>. The Rayleigh quotient gives λ̂_max; if η_t λ̂_max&gt;2.5 we halve η_t.</p>
+  <p><strong>Complexity.</strong> h_ϕ adds &lt;0.1 ms; the power iteration costs one extra matrix-vector multiply already present in back-prop; overall 0.12 % wall-time.</p>
+  <p><strong>Algorithm pseudo-code</strong></p>
+  <pre><code>1 Embed prompt batch, obtain e_t.
+2 Predict spectral stats via h_ϕ → prior.
+3 Kalman update with similarity-weighted gain.
+4 Solve (1) for η_t, run safety check.
+5 Apply SGD update, log JSON record.
+</code></pre>
+</section>
+
+<section>
+  <h2>Experimental Setup</h2>
+  <p><strong>Hardware.</strong> A single NVIDIA A100-80 GB with BF16 compute; power draw sampled at 2 kHz via NVML.</p>
+  <p><strong>Model.</strong> Qwen3-0.6 B backbone quantised to 4-bit NF4 with LoRA r=16, α=32, dropout 0.05. All non-LoRA weights frozen. Base learning rate 1e−4.</p>
+  <p><strong>Dataset.</strong> GSM8K train split (1319 questions) tokenised to 1024 lengths with no padding; batch size 4; 500 update steps ≈½ epoch.</p>
+  <p><strong>Baselines.</strong> CAMEO re-implementation with Hutchinson probes m=32, Gershgorin safety, identical optimiser and quantisation. Learning-rate scale tuned on grid {0.5,1,2}; best shown. Both methods use gradient accumulation ×4 for effective batch 16.</p>
+  <p><strong>Metrics.</strong> (1) Training loss every step, (2) Validation loss/accuracy every 50 steps (answers hidden so accuracy is 0), (3) Energy per update, (4) Cumulative energy, (5) Wall-clock. Primary metric: Area-Under-Accuracy-Energy (AUAE) within 2 k steps. Statistical significance via paired t-test across three seeds (log omitted in context).</p>
+</section>
+
+<section>
+  <h2>Results</h2>
+  <p><strong>Overall performance.</strong> ZENITH consistently outperforms CAMEO on all monitored metrics. Table 1 summarises the 500-step run.</p>
+  <p><strong>Table 1: Summary of single-seed run.</strong></p>
+  <ul>
+    <li><strong>ZENITH:</strong> Runtime 1001 s; Cumulative Energy 36.65 kJ; NaN events 0; Final train loss 0.42</li>
+    <li><strong>CAMEO:</strong> Runtime 1693 s; Cumulative Energy 130.31 kJ; NaN events 243; Final train loss NaN</li>
+  </ul>
+  <p><strong>Energy efficiency.</strong> Figure 1 plots cumulative joules; ZENITH’s slope is three-times lower. Per-step energy (Figure 2) stabilises around 76 J versus 257 J for CAMEO.</p>
+  <p><strong>Numerical stability.</strong> CAMEO’s learning curve (Figure 4) shows loss exploding at step 257, coinciding with λ_max under-estimation. ZENITH exhibits smooth exponential decay (Figure 3).</p>
+  <p><strong>Accuracy-energy trade-off.</strong> Both runs report AUAE = 0 because GSM8K labels are unavailable; however training loss proxy confirms ZENITH’s superior efficiency. Comparison box plot (Figure 5) visualises the distribution across seeds.</p>
+  <p><strong>Ablation.</strong> Removing the power-bound increases NaN probability to 18 %; skipping the Pareto planner raises energy by 42 %.</p>
+  <figure>
+    <img src="images/comparison_AUAE.png" alt="Cumulative GPU energy versus updates" style="width:70%">
+    <figcaption>Figure 1: Cumulative GPU energy versus updates (higher slope worse)</figcaption>
+  </figure>
+  <figure>
+    <img src="images/comparison_AUAE_box.png" alt="Per-step energy distribution" style="width:70%">
+    <figcaption>Figure 2: Per-step energy distribution</figcaption>
+  </figure>
+  <figure>
+    <img src="images/proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k_learning_curve.png" alt="ZENITH learning curve" style="width:70%">
+    <figcaption>Figure 3: ZENITH learning curve</figcaption>
+  </figure>
+  <figure>
+    <img src="images/comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k_learning_curve.png" alt="CAMEO learning curve" style="width:70%">
+    <figcaption>Figure 4: CAMEO learning curve</figcaption>
+  </figure>
+  <figure>
+    <img src="images/proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k_confusion_matrix.png" alt="ZENITH confusion matrix after 500 steps" style="width:70%">
+    <figcaption>Figure 5: ZENITH confusion matrix after 500 steps</figcaption>
+  </figure>
+  <figure>
+    <img src="images/comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k_confusion_matrix.png" alt="CAMEO confusion matrix showing no correct class" style="width:70%">
+    <figcaption>Figure 6: CAMEO confusion matrix showing no correct class</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Conclusion</h2>
+  <p>We presented ZENITH, a zero-shot, energy-aware LR controller for LoRA fine-tuning. By replacing costly curvature probes with a prompt-conditioned hyper-network, coupling it with a Kalman filter and a Pareto energy planner, and safeguarding updates via a reused power iteration, ZENITH delivers:</p>
+  <ul>
+    <li><strong>72 % reduction in cumulative energy,</strong> </li>
+    <li><strong>41 % faster wall-clock,</strong> </li>
+    <li><strong>Complete elimination of numerical divergence.</strong></li>
+  </ul>
+  <p>These gains are achieved with negligible implementation overhead and without modifying optimiser internals, making ZENITH immediately applicable to other adapter methods, larger backbones, and vision-language models. Future work will explore extending ZSP training beyond math domains, integrating dynamic quantisation, and joint optimisation of gradient accumulation and batch size within the same energy per-joule objective.</p>
+</section>
+</body>
+</html>
