@@ -7,7 +7,7 @@ from typing import Tuple
 
 from datasets import load_dataset
 from torch.utils.data import DataLoader
-from transformers import DataCollatorWithPadding, PreTrainedTokenizerBase
+from transformers import DataCollatorForLanguageModeling, PreTrainedTokenizerBase
 
 
 class Preprocessor:
@@ -50,7 +50,7 @@ class Preprocessor:
                 truncation=True,
                 max_length=self.cfg.dataset.preprocessing.max_length,
             )
-            out["labels"] = list(out["input_ids"])
+            out["labels"] = out["input_ids"].copy()
             return out
 
         remove_cols = ds_train.column_names
@@ -62,7 +62,7 @@ class Preprocessor:
 
     def get_dataloaders(self) -> Tuple[DataLoader, DataLoader]:
         bs = self.cfg.training.per_device_batch_size
-        collator = DataCollatorWithPadding(tokenizer=self.tokenizer, return_tensors="pt")
+        collator = DataCollatorForLanguageModeling(tokenizer=self.tokenizer, mlm=False)
         dl_train = DataLoader(self.ds_train, batch_size=bs, shuffle=True, drop_last=True, collate_fn=collator)
         dl_eval = DataLoader(self.ds_eval, batch_size=bs, shuffle=False, collate_fn=collator)
         return dl_train, dl_eval
