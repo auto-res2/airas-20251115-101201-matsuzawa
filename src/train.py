@@ -112,14 +112,19 @@ class EnergyMeter:
 class ZenithLRController:
     """Proposed method – heavily simplified yet faithful."""
 
-    def __init__(self, cfg: DictConfig):
+    def __init__(self, cfg: DictConfig, model: torch.nn.Module = None):
         self.cfg = cfg
         self.mu_H: float | None = None
         self.mu_C: float | None = None
         self.P: float = 1.0
         self.hist: List[Tuple[float, float]] = []  # (η, joule)
 
-        dim = 256
+        # Get embedding dimension from model if available, otherwise use default
+        if model is not None:
+            dim = model.get_input_embeddings().embedding_dim
+        else:
+            dim = 256
+
         self.hyper = (
             torch.nn.Sequential(
                 torch.nn.Linear(dim, 128),
@@ -132,8 +137,12 @@ class ZenithLRController:
         )
         ckpt = Path(CACHE_DIR) / "hypernet.pt"
         if ckpt.is_file():
-            self.hyper.load_state_dict(torch.load(ckpt, map_location="cpu"))
-            self.hyper.eval()
+            try:
+                self.hyper.load_state_dict(torch.load(ckpt, map_location="cpu"))
+                self.hyper.eval()
+            except RuntimeError as e:
+                # Checkpoint dimensions may not match if model architecture changed
+                print(f"Warning: Could not load hypernet checkpoint: {e}")
 
     @torch.no_grad()
     def _zsp(self, cls_emb: torch.Tensor) -> Tuple[float, float]:
@@ -375,7 +384,7 @@ def main(cfg: DictConfig):  # noqa: C901 – complexity justified by full pipeli
 
     controller: Any
     if str(cfg.method).lower().startswith("proposed") or cfg.method == "proposed":
-        controller = ZenithLRController(cfg)
+        controller = ZenithLRController(cfg, model)
     else:
         controller = CameoLRController(cfg)
 
