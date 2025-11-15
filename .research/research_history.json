@@ -780,7 +780,48 @@
     "iterations": [
       {
         "iteration_id": 1,
-        "method": "ZENITH – Zero-Shot, ENergy-aware, Instance-adaptive Tuning of Hyper-steps.\nA. Zero-shot spectral prior (ZSP).\n   • Train once an off-line hypernetwork h_ϕ that maps a 256-d token-level embedding of the *current mini-batch* (mean CLS of Qwen3 encoder) to a predicted rank-spectrum {μ_H,μ_C} for every LoRA layer.\n   • h_ϕ is fitted on 300 k cached curvature/noise pairs harvested from 40 math datasets (GSM8K, SVAMP, MAWPS, …).  At run-time a single forward pass (<0.1 ms) produces η₀ via the same closed-form as CAMEO – *no* Hutchinson probe.\nB. Prompt-conditioned Kalman refinement.\n   • The ZSP output is taken as Kalman *prior*; update equations now include an extra term Δp_t = g_globalᵀg_prompt that weights correction by similarity between consecutive prompts, letting the filter jump instantly when the question type shifts.\nC. Dynamic-Energy Pareto planner.\n   • Maintain a cheap one-step surrogate   E_t(η)=α_t η+β_t/η   (fit by two past GPU-joule samples) and solve  max_η  (ΔAcc/Δη) / E_t(η)  under remaining wall-clock.  Closed-form root gives globally optimal η_t in O(1).\nD. Tight safety via randomized power bound.\n   • Reuse forward activations to run one *power-iteration* on the Gauss–Newton vector product (no extra back-ward) giving ϕ_t ≤ λ_max+ε with provable 1−δ confidence (Hutch++).  Abort only if η_tϕ_t>2.5.\nE. Transparent analytic log.\n   • Every batch dumps a JSON record {prompt_cls, μ_H, μ_C, η_t, J_t, λ̂_max}.  Scripts can regenerate every decision—facilitating peer review.\nImplementation: +190 LOC PyTorch; extra cost 0.12 % wall-time."
+        "method": "ZENITH – Zero-Shot, ENergy-aware, Instance-adaptive Tuning of Hyper-steps.\nA. Zero-shot spectral prior (ZSP).\n   • Train once an off-line hypernetwork h_ϕ that maps a 256-d token-level embedding of the *current mini-batch* (mean CLS of Qwen3 encoder) to a predicted rank-spectrum {μ_H,μ_C} for every LoRA layer.\n   • h_ϕ is fitted on 300 k cached curvature/noise pairs harvested from 40 math datasets (GSM8K, SVAMP, MAWPS, …).  At run-time a single forward pass (<0.1 ms) produces η₀ via the same closed-form as CAMEO – *no* Hutchinson probe.\nB. Prompt-conditioned Kalman refinement.\n   • The ZSP output is taken as Kalman *prior*; update equations now include an extra term Δp_t = g_globalᵀg_prompt that weights correction by similarity between consecutive prompts, letting the filter jump instantly when the question type shifts.\nC. Dynamic-Energy Pareto planner.\n   • Maintain a cheap one-step surrogate   E_t(η)=α_t η+β_t/η   (fit by two past GPU-joule samples) and solve  max_η  (ΔAcc/Δη) / E_t(η)  under remaining wall-clock.  Closed-form root gives globally optimal η_t in O(1).\nD. Tight safety via randomized power bound.\n   • Reuse forward activations to run one *power-iteration* on the Gauss–Newton vector product (no extra back-ward) giving ϕ_t ≤ λ_max+ε with provable 1−δ confidence (Hutch++).  Abort only if η_tϕ_t>2.5.\nE. Transparent analytic log.\n   • Every batch dumps a JSON record {prompt_cls, μ_H, μ_C, η_t, J_t, λ̂_max}.  Scripts can regenerate every decision—facilitating peer review.\nImplementation: +190 LOC PyTorch; extra cost 0.12 % wall-time.",
+        "experimental_design": {
+          "experiment_summary": "The goal is to show that ZENITH—an adaptive, energy-aware learning-rate (η) controller tailored for LoRA fine-tuning—outperforms the best existing schedule (CAMEO) under tight update-count budgets on math-reasoning tasks. We take a 4-bit QLoRA version of the 0.6-billion-parameter Qwen3 model and fine-tune it on GSM8K word-problems. At every mini-batch ZENITH executes:\n1) Zero-Shot Spectral Prior (ZSP): a pre-trained hyper-network maps the mean CLS embedding of the current prompt batch to predicted curvature/noise statistics (μ_H, μ_C) for each adapter layer—yielding an immediate, probe-free η₀.\n2) Prompt-Conditioned Kalman Filter: the ZSP estimates become the prior of a rank-wise Kalman filter whose gain is modulated by cosine similarity between successive prompt embeddings, enabling rapid re-adjustment when the question type changes mid-epoch.\n3) Dynamic-Energy Pareto Planner: a closed-form solver maximises projected accuracy gain per joule within the remaining wall-clock budget by fitting a surrogate cost E_t(η)=α_t η+β_t/η from the two most recent energy measurements.\n4) Randomised Power-Bound Safety Check: a single power iteration reusing forward activations produces a high-confidence upper bound ϕ_t on the largest Gauss-Newton eigen-value; η is halved only if ηϕ_t>2.5.\n5) Transparent Logging: every decision is recorded in JSON so all learning-rate choices are reproducible offline.\nThe experiment runs 500-update fine-tuning sessions (three seeds) and logs accuracy, energy, and safety events every 10 steps. AUAE within 2 k steps is the primary figure of merit. CAMEO is re-implemented with identical 4-bit optimisers for a fair comparison.",
+          "evaluation_metrics": [
+            "Area Under Accuracy–Energy curve (AUAE)",
+            "5-shot Accuracy",
+            "GPU-minutes to 75 % accuracy",
+            "Energy Consumption (joules)",
+            "Safety Violation Count",
+            "Area Under Accuracy–Energy curve (AUAE) within 2 k steps."
+          ],
+          "proposed_method": "ZENITH is an online hyper-step scheduler for low-rank adaptation layers. Core components:\nA. Zero-Shot Spectral Prior (ZSP)\n   • Pre-train a lightweight hyper-network h_ϕ (three 512-unit GELU layers; 0.3 M parameters) on 300 k cached (prompt embedding, curvature/noise) pairs from 40 math datasets.\n   • At run-time, feed the 256-d mean CLS embedding of the current mini-batch to h_ϕ to obtain layer-wise estimates of Hessian and gradient-noise second-moments. A closed-form CAMEO-style rule turns these into an initial rank-wise η₀ with <0.1 ms overhead.\nB. Prompt-Conditioned Kalman Refinement\n   • Maintain for every LoRA rank r a Kalman state (mean, covariance) of curvature/noise. The process-noise term is scaled by Δp_t = g_globalᵀg_prompt (dot-product of the global gradient and the prompt-specific component) so that sudden semantic shifts cause immediate widening of the covariance and faster adaptation.\nC. Dynamic-Energy Pareto Planner\n   • Track two recent (η, energy) pairs to fit E_t(η)=αη+β/η. Combine with a linear local accuracy model ΔAcc≈γη to derive the closed-form maximiser η* = sqrt(β/α)·sqrt(γ/(wall_left)). This single scalar update yields near-optimal accuracy-per-joule under a hard time budget.\nD. Randomised Power-Bound Safety\n   • One power iteration on the Gauss–Newton vector product using Hutch++ averaging gives ϕ_t ≥ λ_max with 1–δ confidence. If ηϕ_t>2.5, scale η by 0.5 to stay in the stable region.\nE. Transparent Analytic Log\n   • Each batch dumps {prompt_cls, μ_H, μ_C, η, energy, ϕ_t}. Down-stream scripts can replay the Kalman and Pareto equations and reproduce η within 0.2 %.\nImplementation adds only 190 lines on top of PEFT + bitsandbytes and consumes 0.12 % extra wall-time on an A100-80 GB.",
+          "comparative_methods": [
+            "CAMEO adaptive LR"
+          ],
+          "models_to_use": [
+            "Qwen3-0.6B (4-bit QLoRA)"
+          ],
+          "datasets_to_use": [
+            "gsm8k"
+          ],
+          "hyperparameters_to_search": {
+            "lora_rank": "8,16,32,64",
+            "kalman_process_noise": "1e-4-1e-1",
+            "energy_tradeoff_lambda": "0.1-2.0",
+            "initial_lr_scale": "0.5-2.0"
+          }
+        },
+        "experiment_runs": [
+          {
+            "run_id": "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k",
+            "method_name": "proposed",
+            "model_name": "Qwen3-0.6B (4-bit QLoRA)",
+            "dataset_name": "gsm8k"
+          },
+          {
+            "run_id": "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k",
+            "method_name": "comparative-1",
+            "model_name": "Qwen3-0.6B (4-bit QLoRA)",
+            "dataset_name": "gsm8k"
+          }
+        ]
       }
     ]
   }
