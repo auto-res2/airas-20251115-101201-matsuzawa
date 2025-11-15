@@ -38,9 +38,9 @@ def main(cfg: DictConfig):
         cfg.wandb.mode = "online"
 
     overrides: List[str] = [f"run={cfg.run}", f"results_dir={cfg.results_dir}", f"mode={cfg.mode}"]
-    cmd = [sys.executable, "-m", "src.train"] + overrides
-    print("[main] launching:\n  ", " \
-   ".join(cmd))
+    train_script = repo_root / "src" / "train.py"
+    cmd = [sys.executable, str(train_script)] + overrides
+    print("[main] launching:\n  ", " ".join(cmd))
     subprocess.run(cmd, check=True, env=os.environ.copy())
 
 
