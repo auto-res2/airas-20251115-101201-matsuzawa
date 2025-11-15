@@ -137,6 +137,9 @@ class ZenithLRController:
 
     @torch.no_grad()
     def _zsp(self, cls_emb: torch.Tensor) -> Tuple[float, float]:
+        # Move cls_emb to the same device as self.hyper to avoid device mismatch
+        hyper_device = next(self.hyper.parameters()).device
+        cls_emb = cls_emb.to(hyper_device)
         mu_H, mu_C = self.hyper(cls_emb).mean(0).tolist()
         return float(mu_H), float(mu_C)
 
@@ -166,6 +169,10 @@ class ZenithLRController:
 
     @torch.no_grad()
     def step(self, cls_emb: torch.Tensor, energy_j: float, g_flat: torch.Tensor) -> float:
+        # Move cls_emb to the same device as self.hyper for consistent device placement
+        hyper_device = next(self.hyper.parameters()).device
+        cls_emb = cls_emb.to(hyper_device)
+
         sim = 1.0
         if hasattr(self, "prev_cls") and self.prev_cls is not None:
             sim = float(torch.cosine_similarity(cls_emb.mean(0), self.prev_cls.mean(0), dim=0).item())
