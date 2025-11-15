@@ -50,10 +50,10 @@ class Preprocessor:
                 truncation=True,
                 max_length=self.cfg.dataset.preprocessing.max_length,
             )
-            out["labels"] = out["input_ids"].copy()
+            out["labels"] = list(out["input_ids"])
             return out
 
-        remove_cols = [c for c in ds_train.column_names if c != "text"]
+        remove_cols = ds_train.column_names
         ds_train = ds_train.map(tok, remove_columns=remove_cols, num_proc=4)
         ds_eval = ds_eval.map(tok, remove_columns=remove_cols, num_proc=4)
 
