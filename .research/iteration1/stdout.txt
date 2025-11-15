@@ -1,0 +1,18 @@
+=== [UV SYNC] Start at Sat Nov 15 12:43:38 PM UTC 2025 ===
+=== [UV SYNC] Finished successfully at Sat Nov 15 12:43:43 PM UTC 2025 ===
+=== [TRIAL RUN] Start for proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k at Sat Nov 15 12:43:43 PM UTC 2025 ===
+[main] launching:
+   /home/toma/t-80-8-b-03/_work/airas-20251115-101201-matsuzawa/airas-20251115-101201-matsuzawa/.venv/bin/python3 /home/toma/t-80-8-b-03/_work/airas-20251115-101201-matsuzawa/airas-20251115-101201-matsuzawa/src/train.py run=proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k results_dir=.research/iteration1 mode=trial
+[2025-11-15 12:44:22,539][accelerate.utils.modeling][INFO] - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - 0: 279725504.0 bytes required
+  - 1: 272269312 bytes required
+  - 2: 272269312 bytes required
+  - 3: 272269312 bytes required
+  - 4: 272269312 bytes required
+  - 5: 272269312 bytes required
+  - 6: 272269312 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+trainable params: 8,798,208 || all params: 502,830,976 || trainable%: 1.7497
+Training finished – Area Under Accuracy–Energy curve (AUAE) within 2 k steps. = nan
+=== [TRIAL RUN] PASSED for proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k at Sat Nov 15 12:44:43 PM UTC 2025 ===
+
