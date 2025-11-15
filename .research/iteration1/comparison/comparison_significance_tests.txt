@@ -1,0 +1,4 @@
+Two-sample t-test (Welch):
+  t-statistic = nan, p-value = nan
+Mann–Whitney U test:
+  U-statistic = nan, p-value = nan

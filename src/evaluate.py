@@ -48,30 +48,66 @@ def _parse_kv(argv: List[str]) -> Dict[str, str]:
 # Plot helpers
 # ---------------------------------------------------------------------------
 
-def _plot_learning_curves(df, run_id: str, out_dir: Path) -> Path:
-    plt.figure(figsize=(6, 4))
+def _plot_learning_curves(df, run_id: str, out_dir: Path, ylim=None, xlim=None) -> Path:
+    import pandas as pd
+    plt.figure(figsize=(8, 5), dpi=300)
+
+    # Convert step to numeric
+    step = pd.to_numeric(df["_step"], errors='coerce')
+
+    plotted_any = False
     if "train_loss" in df.columns:
-        sns.lineplot(x=df["_step"], y=df["train_loss"], label="train_loss")
+        # Convert to numeric and drop NaN values
+        train_loss = pd.to_numeric(df["train_loss"], errors='coerce')
+        valid_mask = ~(train_loss.isna() | step.isna())
+        if valid_mask.any():
+            sns.lineplot(x=step[valid_mask], y=train_loss[valid_mask], label="Training Loss", linewidth=2)
+            plotted_any = True
+
     if "val_acc" in df.columns:
-        sns.lineplot(x=df["_step"], y=df["val_acc"], label="val_acc")
-    plt.xlabel("Step")
-    plt.ylabel("Metric value")
-    plt.title(run_id)
-    plt.legend()
+        # Convert to numeric and drop NaN values
+        val_acc = pd.to_numeric(df["val_acc"], errors='coerce')
+        valid_mask = ~(val_acc.isna() | step.isna())
+        # Only plot if there are non-zero values
+        if valid_mask.any() and val_acc[valid_mask].max() > 0:
+            sns.lineplot(x=step[valid_mask], y=val_acc[valid_mask], label="Validation Accuracy", linewidth=2)
+            plotted_any = True
+
+    plt.xlabel("Training Step", fontsize=12)
+    plt.ylabel("Metric Value", fontsize=12)
+    # Shorten title for better readability
+    short_title = run_id.replace("-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k", "")
+    plt.title(f"Learning Curves: {short_title}", fontsize=13, fontweight='bold')
+
+    if plotted_any:
+        plt.legend(fontsize=10, loc='best')
+
+    # Apply consistent scales if provided
+    if ylim is not None:
+        plt.ylim(ylim)
+    if xlim is not None:
+        plt.xlim(xlim)
+
+    plt.grid(True, alpha=0.3)
     plt.tight_layout()
     fname = out_dir / f"{run_id}_learning_curve.pdf"
-    plt.savefig(fname)
+    plt.savefig(fname, dpi=300, bbox_inches='tight')
     plt.close()
     return fname
 
 
 def _plot_confusion_matrix(cm: np.ndarray, run_id: str, out_dir: Path) -> Path:
+    fig, ax = plt.subplots(figsize=(7, 6), dpi=300)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-    disp.plot(cmap="Blues", colorbar=True)
-    plt.title(f"{run_id} – Confusion Matrix")
+    disp.plot(cmap="Blues", colorbar=True, ax=ax, values_format='d')
+    # Shorten title for better readability
+    short_title = run_id.replace("-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k", "")
+    ax.set_title(f"Confusion Matrix: {short_title}", fontsize=13, fontweight='bold', pad=20)
+    ax.set_xlabel("Predicted Label", fontsize=12)
+    ax.set_ylabel("True Label", fontsize=12)
     plt.tight_layout()
     fname = out_dir / f"{run_id}_confusion_matrix.pdf"
-    plt.savefig(fname)
+    plt.savefig(fname, dpi=300, bbox_inches='tight')
     plt.close()
     return fname
 
@@ -79,32 +115,66 @@ def _plot_confusion_matrix(cm: np.ndarray, run_id: str, out_dir: Path) -> Path:
 def _plot_comparison_bar(metric_map: Dict[str, float], title: str, out_dir: Path) -> Path:
     run_ids = list(metric_map.keys())
     values = list(metric_map.values())
-    plt.figure(figsize=(max(4, len(run_ids) * 0.6), 4))
-    sns.barplot(x=run_ids, y=values, palette="Set2")
-    plt.ylabel(title)
-    plt.xticks(rotation=45, ha="right")
-    for i, v in enumerate(values):
-        plt.text(i, v, f"{v:.3f}", ha="center", va="bottom")
+
+    # Shorten labels for better readability
+    short_labels = [rid.replace("iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k", "").replace("-", " ").strip() for rid in run_ids]
+
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
+    bars = ax.bar(range(len(short_labels)), values, color=['#2ecc71' if 'proposed' in rid else '#3498db' for rid in run_ids],
+                  edgecolor='black', linewidth=1.2, alpha=0.8)
+
+    # Add value labels on top of bars
+    for i, (bar, v) in enumerate(zip(bars, values)):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{v:.4f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
+
+    ax.set_ylabel(title, fontsize=13, fontweight='bold')
+    ax.set_xlabel("Run Configuration", fontsize=13, fontweight='bold')
+    ax.set_title(f"Comparison: {title}", fontsize=14, fontweight='bold', pad=20)
+    ax.set_xticks(range(len(short_labels)))
+    ax.set_xticklabels(short_labels, rotation=15, ha="right", fontsize=11)
+    ax.grid(True, alpha=0.3, axis='y')
+
+    # Add a legend
+    from matplotlib.patches import Patch
+    legend_elements = [Patch(facecolor='#2ecc71', edgecolor='black', label='Proposed'),
+                       Patch(facecolor='#3498db', edgecolor='black', label='Comparative')]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=10)
+
     plt.tight_layout()
     fname = out_dir / f"comparison_{title.replace(' ', '_')}.pdf"
-    plt.savefig(fname)
+    plt.savefig(fname, dpi=300, bbox_inches='tight')
     plt.close()
     return fname
 
 
 def _plot_comparison_box(metric_map: Dict[str, float], title: str, out_dir: Path) -> Path:
-    categories = ["proposed" if "proposed" in rid else "baseline" for rid in metric_map]
+    categories = ["Proposed" if "proposed" in rid else "Comparative" for rid in metric_map]
     data = {
         "run_id": list(metric_map.keys()),
         title: list(metric_map.values()),
-        "category": categories,
+        "Category": categories,
     }
-    plt.figure(figsize=(6, 4))
-    sns.boxplot(x="category", y=title, data=data, palette="pastel")
-    sns.stripplot(x="category", y=title, data=data, color="black", alpha=0.6)
+
+    import pandas as pd
+    df = pd.DataFrame(data)
+
+    fig, ax = plt.subplots(figsize=(8, 6), dpi=300)
+
+    # Custom colors for the boxes
+    colors = {'Proposed': '#2ecc71', 'Comparative': '#3498db'}
+    sns.boxplot(x="Category", y=title, data=df, palette=colors, ax=ax, linewidth=2)
+    sns.stripplot(x="Category", y=title, data=df, color="black", alpha=0.7, size=8, ax=ax)
+
+    ax.set_ylabel(title, fontsize=13, fontweight='bold')
+    ax.set_xlabel("Method", fontsize=13, fontweight='bold')
+    ax.set_title(f"Distribution Comparison: {title}", fontsize=14, fontweight='bold', pad=20)
+    ax.grid(True, alpha=0.3, axis='y')
+
     plt.tight_layout()
     fname = out_dir / f"comparison_{title.replace(' ', '_')}_box.pdf"
-    plt.savefig(fname)
+    plt.savefig(fname, dpi=300, bbox_inches='tight')
     plt.close()
     return fname
 
@@ -116,7 +186,7 @@ def _plot_comparison_box(metric_map: Dict[str, float], title: str, out_dir: Path
 def main() -> None:
     kv = _parse_kv(sys.argv[1:])
     if "results_dir" not in kv or "run_ids" not in kv:
-        raise SystemExit("Usage: python -m src.evaluate results_dir=<DIR> run_ids='["run",...]'")
+        raise SystemExit('Usage: python -m src.evaluate results_dir=<DIR> run_ids=\'["run",...]\'')
 
     results_dir = Path(kv["results_dir"]).expanduser().resolve()
     run_ids: List[str] = json.loads(kv["run_ids"])
@@ -135,11 +205,44 @@ def main() -> None:
     per_run_files: List[Path] = []
     comparison_files: List[Path] = []
 
+    # First pass: collect all data and determine global scales
+    import pandas as pd
+    all_histories = {}
+    all_summaries = {}
+    all_configs = {}
+    global_y_min, global_y_max = float('inf'), float('-inf')
+    global_x_max = 0
+
     for run_id in run_ids:
         run = api.run(f"{entity}/{project}/{run_id}")
         history = run.history()  # pd.DataFrame
         summary = run.summary._json_dict
         cfg_run = dict(run.config)
+
+        all_histories[run_id] = history
+        all_summaries[run_id] = summary
+        all_configs[run_id] = cfg_run
+
+        # Calculate global scales
+        step = pd.to_numeric(history["_step"], errors='coerce')
+        if "train_loss" in history.columns:
+            train_loss = pd.to_numeric(history["train_loss"], errors='coerce')
+            valid_mask = ~(train_loss.isna() | step.isna())
+            if valid_mask.any():
+                global_y_min = min(global_y_min, train_loss[valid_mask].min())
+                global_y_max = max(global_y_max, train_loss[valid_mask].max())
+                global_x_max = max(global_x_max, step[valid_mask].max())
+
+    # Add some padding to y-axis
+    y_range = global_y_max - global_y_min
+    ylim = (global_y_min - 0.05 * y_range, global_y_max + 0.05 * y_range)
+    xlim = (0, global_x_max * 1.02)
+
+    # Second pass: create plots with consistent scales
+    for run_id in run_ids:
+        history = all_histories[run_id]
+        summary = all_summaries[run_id]
+        cfg_run = all_configs[run_id]
 
         run_out = results_dir / run_id
         run_out.mkdir(parents=True, exist_ok=True)
@@ -152,7 +255,7 @@ def main() -> None:
         per_run_files.append(mfile)
 
         # plots ----------------------------------------------------------------
-        lc_path = _plot_learning_curves(history, run_id, run_out)
+        lc_path = _plot_learning_curves(history, run_id, run_out, ylim=ylim, xlim=xlim)
         per_run_files.append(lc_path)
 
         if "confusion_matrix" in summary:

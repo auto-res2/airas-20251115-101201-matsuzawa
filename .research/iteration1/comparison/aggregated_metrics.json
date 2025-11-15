@@ -1,0 +1,75 @@
+{
+  "primary_metric": "Area Under Accuracy\u2013Energy curve (AUAE) within 2 k steps.",
+  "metrics": {
+    "Area Under Accuracy\u2013Energy curve (AUAE) within 2 k steps.": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0
+    },
+    "_runtime": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 1001.222492688,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 1693.405775634
+    },
+    "_step": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 500.0,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 500.0
+    },
+    "_timestamp": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 1763214439.840715,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 1763217762.6520708
+    },
+    "best_val_acc": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0
+    },
+    "cum_energy_j": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 36650.881996154785,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 130310.7389998436
+    },
+    "energy_j": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 76.11100006103516,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 256.8970000743866
+    },
+    "eta_scale": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.5
+    },
+    "final_val_acc": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0
+    },
+    "final_val_loss": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 14.295004734848485
+    },
+    "lr": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 5e-05
+    },
+    "train_loss": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.42284154891967773
+    },
+    "val_acc": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0,
+      "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 0.0
+    },
+    "val_loss": {
+      "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k": 14.295004734848485
+    }
+  },
+  "best_proposed": {
+    "run_id": "proposed-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k",
+    "value": 0.0
+  },
+  "best_baseline": {
+    "run_id": "comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k",
+    "value": 0.0
+  },
+  "gap": 0.0,
+  "statistics": {
+    "t_test": {
+      "t": NaN,
+      "p": NaN
+    },
+    "mann_whitney": {
+      "u": NaN,
+      "p": NaN
+    }
+  }
+}
