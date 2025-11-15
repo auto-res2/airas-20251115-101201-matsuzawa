@@ -5,8 +5,12 @@ defaults:
   - _self_
 
 run: ""         # run_id to execute
+run_id: ""      # run identifier
+method: ""      # method name
+method_description: ""  # method description
 results_dir: "./outputs"
 mode: full      # full | trial
+notes: ""       # additional notes
 
 wandb:
   entity: gengaru617-personal
@@ -17,10 +21,14 @@ training:
   total_updates: 100
   per_device_batch_size: 4
   gradient_accumulation_steps: 1
+  effective_batch_size: 4
   base_lr: 1.0e-4
   weight_decay: 0.0
+  warmup_steps: 0
+  lr_scheduler: constant
   max_grad_norm: 1.0
   optimizer: adamw_bnb_8bit
+  gradient_checkpointing: false
   bf16: true
 
 dataset:
@@ -35,8 +43,23 @@ model:
   name: Qwen/Qwen3-0.6B
   quantization: 4bit
   precision: bf16
+  lora:
+    r: 8
+    alpha: 16
+    dropout: 0.05
+    target_modules: []
 
 optuna:
   n_trials: 0
   direction: maximize
   search_space: {}
+
+zenith:
+  zero_shot_spectral_prior: false
+  kalman_process_noise: 1e-3
+  energy_tradeoff_lambda: 0.5
+  initial_lr_scale: 1.0
+  dynamic_energy_pareto: false
+  power_bound_safety: false
+
+cameo: {}
