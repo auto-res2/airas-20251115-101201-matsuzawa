@@ -7,12 +7,19 @@ All heavy lifting – data pipeline, model, optimiser, ZENITH/CAMEO
 controllers, energy metering and WandB logging – lives here.
 """
 
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports when run as script
+_script_dir = Path(__file__).resolve().parent
+_repo_root = _script_dir.parent
+if str(_repo_root) not in sys.path:
+    sys.path.insert(0, str(_repo_root))
+
 import json
 import os
 import random
-import sys
 import time
-from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import hydra
@@ -25,8 +32,8 @@ from sklearn.metrics import confusion_matrix
 from torch.nn.utils import clip_grad_norm_
 from torch.utils.data import DataLoader
 
-from .model import build_model_and_tokenizer
-from .preprocess import Preprocessor
+from src.model import build_model_and_tokenizer
+from src.preprocess import Preprocessor
 
 try:
     import bitsandbytes as bnb  # type: ignore
