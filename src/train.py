@@ -293,6 +293,11 @@ def _quick_val(cfg_trial: DictConfig) -> float:
     cfg_t = OmegaConf.create(cfg_t)
     cfg_t.training.total_updates = max(10, int(cfg_t.training.total_updates * 0.05))
     cfg_t.wandb.mode = "disabled"
+
+    # Clear GPU cache before starting
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     model, tok = build_model_and_tokenizer(cfg_t)
     prep = Preprocessor(tok, cfg_t)
     train_loader, val_loader = prep.get_dataloaders()
@@ -312,6 +317,12 @@ def _quick_val(cfg_trial: DictConfig) -> float:
         if steps >= cfg_t.training.total_updates:
             break
     _, acc, _, _ = _evaluate(model, val_loader, cfg_t)
+
+    # Clean up memory after trial
+    del model, tok, prep, train_loader, val_loader, opt, scaler
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     return acc
 
 

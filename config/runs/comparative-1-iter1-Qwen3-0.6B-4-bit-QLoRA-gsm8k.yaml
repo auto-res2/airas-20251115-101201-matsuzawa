@@ -27,8 +27,8 @@ dataset:
     padding: false
 training:
   total_updates: 500
-  per_device_batch_size: 4
-  gradient_accumulation_steps: 4
+  per_device_batch_size: 2
+  gradient_accumulation_steps: 8
   effective_batch_size: 16
   optimizer: adamw_bnb_8bit
   base_lr: 1.0e-4
@@ -59,6 +59,9 @@ optuna:
       low: 0.5
       high: 2.0
     training.per_device_batch_size:
+      type: categorical
+      choices: [2, 4]
+    training.gradient_accumulation_steps:
       type: categorical
       choices: [4, 8]
 notes: |
