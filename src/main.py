@@ -24,7 +24,9 @@ def main(cfg: DictConfig):
     run_yaml = repo_root / "config" / "runs" / f"{cfg.run}.yaml"
     if not run_yaml.is_file():
         raise FileNotFoundError(f"Run YAML not found: {run_yaml}")
+    OmegaConf.set_struct(cfg, False)
     cfg = OmegaConf.merge(cfg, OmegaConf.load(run_yaml))
+    OmegaConf.set_struct(cfg, True)
 
     # mode handling ----------------------------------------------------------
     if cfg.mode == "trial":
