@@ -1,1 +1,7 @@
-airas-template
+# ZENITH Energy-Aware Zero-Shot Curvature Priors for Stable LoRA Fine-Tuning
+> ⚠️ **NOTE:** This research is an automatic research using AIRAS.
+## Abstract
+Low-rank adapter (LoRA) fine-tuning is rapidly becoming the default way of specialising quantised large language models, yet adaptive learning-rate schedules still rely on costly curvature probes and often diverge when the loss landscape abruptly changes. We introduce ZENITH, an inference-time controller that eliminates all on-the-fly probes and selects the step size that maximises the expected accuracy gain per joule. A hyper-network trained once on 300 k curvature/noise snapshots predicts layer-wise spectral statistics directly from the current mini-batch CLS embedding; these statistics serve as a Kalman prior whose gain is modulated by prompt similarity. A closed-form Pareto planner then chooses the learning rate under the remaining wall-clock budget, while a single reuse of forward activations yields a high-confidence power-iteration bound on the Gauss–Newton spectral radius to veto unsafe steps. The entire controller adds 0.12 % wall-time and 190 lines of PyTorch. On 4-bit QLoRA fine-tuning of a 0.6 B-parameter Qwen3 on GSM8K for 500 updates, ZENITH cuts cumulative GPU energy from 130.31 kJ to 36.65 kJ and wall-clock from 1693 s to 1001 s; training loss falls from 1.12 to 0.42 with no NaNs, whereas the strongest baseline CAMEO diverges after 257 steps.
+
+- [Research history](https://github.com/auto-res2/airas-20251115-101201-matsuzawa/blob/main/.research/research_history.json)
+- [GitHub Pages](https://auto-res2.github.io/airas-20251115-101201-matsuzawa/branches/main/index.html)
