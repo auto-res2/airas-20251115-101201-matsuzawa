@@ -7,7 +7,7 @@ from typing import Tuple
 
 from datasets import load_dataset
 from torch.utils.data import DataLoader
-from transformers import DataCollatorForLanguageModeling, PreTrainedTokenizerBase
+from transformers import DataCollatorForLanguageModeling, PreTrainedTokenizerBase, default_data_collator
 
 
 class Preprocessor:
@@ -48,9 +48,14 @@ class Preprocessor:
             out = self.tokenizer(
                 example["text"],
                 truncation=True,
+                padding="max_length",
                 max_length=self.cfg.dataset.preprocessing.max_length,
             )
-            out["labels"] = out["input_ids"].copy()
+            # Copy input_ids to labels, but replace padding tokens with -100
+            labels = out["input_ids"].copy()
+            # Replace padding token IDs with -100 so they're ignored in loss calculation
+            labels = [label if label != self.tokenizer.pad_token_id else -100 for label in labels]
+            out["labels"] = labels
             return out
 
         remove_cols = ds_train.column_names
@@ -62,7 +67,9 @@ class Preprocessor:
 
     def get_dataloaders(self) -> Tuple[DataLoader, DataLoader]:
         bs = self.cfg.training.per_device_batch_size
-        collator = DataCollatorForLanguageModeling(tokenizer=self.tokenizer, mlm=False)
+        # Since we're padding to max_length during tokenization, use default_data_collator
+        # which simply converts lists to tensors without additional padding
+        collator = default_data_collator
         dl_train = DataLoader(self.ds_train, batch_size=bs, shuffle=True, drop_last=True, collate_fn=collator)
         dl_eval = DataLoader(self.ds_eval, batch_size=bs, shuffle=False, collate_fn=collator)
         return dl_train, dl_eval
