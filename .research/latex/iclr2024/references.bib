@@ -5,3 +5,273 @@
   publisher = {GitHub},
   url       = {https://github.com/airas-org/airas}
 }
+
+% ===========================================
+% REQUIRED CITATIONS
+% These papers must be cited in the manuscript
+% ===========================================
+
+@article{agarwal-2021-acceleration,
+ abstract = {In practical applications of iterative first-order optimization, the learning rate schedule remains notoriously difficult to understand and expensive to tune. We demonstrate the presence of these subtleties even in the innocuous case when the objective is a convex quadratic. We reinterpret an iterative algorithm from the numerical analysis literature as what we call the Chebyshev learning rate schedule for accelerating vanilla gradient descent, and show that the problem of mitigating instability leads to a fractal ordering of step sizes. We provide some experiments to challenge conventional beliefs about stable learning rates in deep learning: the fractal schedule enables training to converge with locally unstable updates which make negative progress on the objective.},
+ arxiv_url = {https://arxiv.org/pdf/2103.01338v2.pdf},
+ author = {Naman Agarwal and Surbhi Goel and Cyril Zhang},
+ title = {Acceleration via Fractal Learning Rate Schedules},
+ year = {2021}
+}
+
+@article{author-year-adaptive,
+ title = {Adaptive Layer Sparsity for Large Language Models via Activation Correlation Assessment}
+}
+
+@article{bai-2024-sparsellm,
+ abstract = {The transformative impact of large language models (LLMs) like LLaMA and GPT on natural language processing is countered by their prohibitive computational demands. Pruning has emerged as a pivotal compression strategy, introducing sparsity to enhance both memory and computational efficiency. Yet, traditional global pruning is impractical for LLMs due to scalability issues, while local pruning, despite its efficiency, leads to suboptimal solutions. Addressing these challenges, we propose SparseLLM, a novel framework that redefines the global pruning process into manageable, coordinated subproblems, allowing for resource-efficient optimization with global optimality. SparseLLM's approach, which conceptualizes LLMs as a chain of modular functions and leverages auxiliary variables for problem decomposition, not only facilitates a pragmatic application on LLMs but also demonstrates significant performance improvements, particularly in high-sparsity regimes where it surpasses current state-of-the-art methods.},
+ arxiv_url = {https://arxiv.org/pdf/2402.17946v4.pdf},
+ author = {Guangji Bai and Yijiang Li and Chen Ling and Kibaek Kim and Liang Zhao},
+ github_url = {https://github.com/BaiTheBest/SparseLLM},
+ title = {SparseLLM: Towards Global Pruning of Pre-trained Language Models},
+ year = {2024}
+}
+
+@article{chen-2024-quanta,
+ abstract = {We propose Quantum-informed Tensor Adaptation (QuanTA), a novel, easy-to-implement, fine-tuning method with no inference overhead for large-scale pre-trained language models. By leveraging quantum-inspired methods derived from quantum circuit structures, QuanTA enables efficient high-rank fine-tuning, surpassing the limitations of Low-Rank Adaptation (LoRA)--low-rank approximation may fail for complicated downstream tasks. Our approach is theoretically supported by the universality theorem and the rank representation theorem to achieve efficient high-rank adaptations. Experiments demonstrate that QuanTA significantly enhances commonsense reasoning, arithmetic reasoning, and scalability compared to traditional methods. Furthermore, QuanTA shows superior performance with fewer trainable parameters compared to other approaches and can be designed to integrate with existing fine-tuning algorithms for further improvement, providing a scalable and efficient solution for fine-tuning large language models and advancing state-of-the-art in natural language processing.},
+ arxiv_url = {https://arxiv.org/pdf/2406.00132v3.pdf},
+ author = {Zhuo Chen and Rumen Dangovski and Charlotte Loh and Owen Dugan and Di Luo and Marin Soljačić},
+ doi = {10.52202/079017-2928},
+ github_url = {https://github.com/quanta-fine-tuning/quanta},
+ title = {QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation},
+ year = {2024}
+}
+
+@article{cherian-2024-evaluating,
+ abstract = {Recent years have seen a significant progress in the general-purpose problem solving abilities of large vision and language models (LVLMs), such as ChatGPT, Gemini, etc.; some of these breakthroughs even seem to enable AI models to outperform human abilities in varied tasks that demand higher-order cognitive skills. Are the current large AI models indeed capable of generalized problem solving as humans do? A systematic analysis of AI capabilities for joint vision and text reasoning, however, is missing in the current scientific literature. In this paper, we make an effort towards filling this gap, by evaluating state-of-the-art LVLMs on their mathematical and algorithmic reasoning abilities using visuo-linguistic problems from children's Olympiads. Specifically, we consider problems from the Mathematical Kangaroo (MK) Olympiad, which is a popular international competition targeted at children from grades 1-12, that tests children's deeper mathematical abilities using puzzles that are appropriately gauged to their age and skills. Using the puzzles from MK, we created a dataset, dubbed SMART-840, consisting of 840 problems from years 2020-2024. With our dataset, we analyze LVLMs power on mathematical reasoning; their responses on our puzzles offer a direct way to compare against that of children. Our results show that modern LVLMs do demonstrate increasingly powerful reasoning skills in solving problems for higher grades, but lack the foundations to correctly answer problems designed for younger children. Further analysis shows that there is no significant correlation between the reasoning capabilities of AI models and that of young children, and their capabilities appear to be based on a different type of reasoning than the cumulative knowledge that underlies children's mathematics and logic skills.},
+ arxiv_url = {https://arxiv.org/pdf/2406.15736v2.pdf},
+ author = {Anoop Cherian and Kuan-Chuan Peng and Suhas Lohit and Joanna Matthiesen and Kevin Smith and Joshua B. Tenenbaum},
+ title = {Evaluating Large Vision-and-Language Models on Children's Mathematical Olympiads},
+ year = {2024}
+}
+
+@article{dettmers-2023-qlora,
+ abstract = {We present QLoRA, an efficient finetuning approach that reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU while preserving full 16-bit finetuning task performance. QLoRA backpropagates gradients through a frozen, 4-bit quantized pretrained language model into Low Rank Adapters~(LoRA). Our best model family, which we name Guanaco, outperforms all previous openly released models on the Vicuna benchmark, reaching 99.3% of the performance level of ChatGPT while only requiring 24 hours of finetuning on a single GPU. QLoRA introduces a number of innovations to save memory without sacrificing performance: (a) 4-bit NormalFloat (NF4), a new data type that is information theoretically optimal for normally distributed weights (b) double quantization to reduce the average memory footprint by quantizing the quantization constants, and (c) paged optimziers to manage memory spikes. We use QLoRA to finetune more than 1,000 models, providing a detailed analysis of instruction following and chatbot performance across 8 instruction datasets, multiple model types (LLaMA, T5), and model scales that would be infeasible to run with regular finetuning (e.g. 33B and 65B parameter models). Our results show that QLoRA finetuning on a small high-quality dataset leads to state-of-the-art results, even when using smaller models than the previous SoTA. We provide a detailed analysis of chatbot performance based on both human and GPT-4 evaluations showing that GPT-4 evaluations are a cheap and reasonable alternative to human evaluation. Furthermore, we find that current chatbot benchmarks are not trustworthy to accurately evaluate the performance levels of chatbots. A lemon-picked analysis demonstrates where Guanaco fails compared to ChatGPT. We release all of our models and code, including CUDA kernels for 4-bit training.},
+ arxiv_url = {https://arxiv.org/pdf/2305.14314v1.pdf},
+ author = {Tim Dettmers and Artidoro Pagnoni and Ari Holtzman and Luke Zettlemoyer},
+ github_url = {https://github.com/artidoro/qlora},
+ title = {QLoRA: Efficient Finetuning of Quantized LLMs},
+ year = {2023}
+}
+
+@article{fahrbach-2023-learning,
+ abstract = {We design learning rate schedules that minimize regret for SGD-based online learning in the presence of a changing data distribution. We fully characterize the optimal learning rate schedule for online linear regression via a novel analysis with stochastic differential equations. For general convex loss functions, we propose new learning rate schedules that are robust to distribution shift and we give upper and lower bounds for the regret that only differ by constants. For non-convex loss functions, we define a notion of regret based on the gradient norm of the estimated models and propose a learning schedule that minimizes an upper bound on the total expected regret. Intuitively, one expects changing loss landscapes to require more exploration, and we confirm that optimal learning rate schedules typically increase in the presence of distribution shift. Finally, we provide experiments for high-dimensional regression models and neural networks to illustrate these learning rate schedules and their cumulative regret.},
+ arxiv_url = {https://arxiv.org/pdf/2303.15634v2.pdf},
+ author = {Matthew Fahrbach and Adel Javanmard and Vahab Mirrokni and Pratik Worah},
+ github_url = {https://github.com/fahrbach/learning-rate-schedules},
+ journal = {Proceedings of the 40th International Conference on Machine Learning (ICML 2023) 9523-9546},
+ title = {Learning Rate Schedules in the Presence of Distribution Shift},
+ year = {2023}
+}
+
+@article{hgele-2024-scaling,
+ abstract = {Scale has become a main ingredient in obtaining strong machine learning models. As a result, understanding a model's scaling properties is key to effectively designing both the right training setup as well as future generations of architectures. In this work, we argue that scale and training research has been needlessly complex due to reliance on the cosine schedule, which prevents training across different lengths for the same model size. We investigate the training behavior of a direct alternative -- constant learning rate and cooldowns -- and find that it scales predictably and reliably similar to cosine. Additionally, we show that stochastic weight averaging yields improved performance along the training trajectory, without additional training costs, across different scales. Importantly, with these findings we demonstrate that scaling experiments can be performed with significantly reduced compute and GPU hours by utilizing fewer but reusable training runs. Our code is available at \url{https://github.com/epfml/schedules-and-scaling/}.},
+ arxiv_url = {https://arxiv.org/pdf/2405.18392v3.pdf},
+ author = {Alexander Hägele and Elie Bakouch and Atli Kosson and Loubna Ben Allal and Leandro Von Werra and Martin Jaggi},
+ github_url = {https://github.com/epfml/schedules-and-scaling},
+ title = {Scaling Laws and Compute-Optimal Training Beyond Fixed Training Durations},
+ year = {2024}
+}
+
+@article{jin-2021-autolrs,
+ abstract = {The learning rate (LR) schedule is one of the most important hyper-parameters needing careful tuning in training DNNs. However, it is also one of the least automated parts of machine learning systems and usually costs significant manual effort and computing. Though there are pre-defined LR schedules and optimizers with adaptive LR, they introduce new hyperparameters that need to be tuned separately for different tasks/datasets. In this paper, we consider the question: Can we automatically tune the LR over the course of training without human involvement? We propose an efficient method, AutoLRS, which automatically optimizes the LR for each training stage by modeling training dynamics. AutoLRS aims to find an LR applied to every $τ$ steps that minimizes the resulted validation loss. We solve this black-box optimization on the fly by Bayesian optimization (BO). However, collecting training instances for BO requires a system to evaluate each LR queried by BO's acquisition function for $τ$ steps, which is prohibitively expensive in practice. Instead, we apply each candidate LR for only $τ'\llτ$ steps and train an exponential model to predict the validation loss after $τ$ steps. This mutual-training process between BO and the loss-prediction model allows us to limit the training steps invested in the BO search. We demonstrate the advantages and the generality of AutoLRS through extensive experiments of training DNNs for tasks from diverse domains using different optimizers. The LR schedules auto-generated by AutoLRS lead to a speedup of $1.22\times$, $1.43\times$, and $1.5\times$ when training ResNet-50, Transformer, and BERT, respectively, compared to the LR schedules in their original papers, and an average speedup of $1.31\times$ over state-of-the-art heavily-tuned LR schedules.},
+ arxiv_url = {https://arxiv.org/pdf/2105.10762v1.pdf},
+ author = {Yuchen Jin and Tianyi Zhou and Liangyu Zhao and Yibo Zhu and Chuanxiong Guo and Marco Canini and Arvind Krishnamurthy},
+ github_url = {https://github.com/YuchenJin/autolrs},
+ title = {AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly},
+ year = {2021}
+}
+
+@article{li-2019-budgeted,
+ abstract = {In most practical settings and theoretical analyses, one assumes that a model can be trained until convergence. However, the growing complexity of machine learning datasets and models may violate such assumptions. Indeed, current approaches for hyper-parameter tuning and neural architecture search tend to be limited by practical resource constraints. Therefore, we introduce a formal setting for studying training under the non-asymptotic, resource-constrained regime, i.e., budgeted training. We analyze the following problem: "given a dataset, algorithm, and fixed resource budget, what is the best achievable performance?" We focus on the number of optimization iterations as the representative resource. Under such a setting, we show that it is critical to adjust the learning rate schedule according to the given budget. Among budget-aware learning schedules, we find simple linear decay to be both robust and high-performing. We support our claim through extensive experiments with state-of-the-art models on ImageNet (image classification), Kinetics (video classification), MS COCO (object detection and instance segmentation), and Cityscapes (semantic segmentation). We also analyze our results and find that the key to a good schedule is budgeted convergence, a phenomenon whereby the gradient vanishes at the end of each allowed budget. We also revisit existing approaches for fast convergence and show that budget-aware learning schedules readily outperform such approaches under (the practical but under-explored) budgeted training setting.},
+ arxiv_url = {https://arxiv.org/pdf/1905.04753v4.pdf},
+ author = {Mengtian Li and Ersin Yumer and Deva Ramanan},
+ github_url = {https://github.com/pytorch/examples},
+ title = {Budgeted Training: Rethinking Deep Neural Network Training Under Resource Constraints},
+ year = {2019}
+}
+
+@article{li-2024-evaluating,
+ abstract = {Post-training quantization (PTQ) has emerged as a promising technique to reduce the cost of large language models (LLMs). Specifically, PTQ can effectively mitigate memory consumption and reduce computational overhead in LLMs. To meet the requirements of both high efficiency and performance across diverse scenarios, a comprehensive evaluation of quantized LLMs is essential to guide the selection of quantization methods. This paper presents a thorough evaluation of these factors by evaluating the effect of PTQ on Weight, Activation, and KV Cache on 11 model families, including OPT, LLaMA2, Falcon, Bloomz, Mistral, ChatGLM, Vicuna, LongChat, StableLM, Gemma, and Mamba, with parameters ranging from 125M to 180B. The evaluation encompasses five types of tasks: basic NLP, emergent ability, trustworthiness, dialogue, and long-context tasks. Moreover, we also evaluate the state-of-the-art (SOTA) quantization methods to demonstrate their applicability. Based on the extensive experiments, we systematically summarize the effect of quantization, provide recommendations to apply quantization techniques, and point out future directions. The code can be found in https://github.com/thu-nics/qllm-eval.},
+ arxiv_url = {https://arxiv.org/pdf/2402.18158v2.pdf},
+ author = {Shiyao Li and Xuefei Ning and Luning Wang and Tengxuan Liu and Xiangsheng Shi and Shengen Yan and Guohao Dai and Huazhong Yang and Yu Wang},
+ title = {Evaluating Quantized Large Language Models},
+ year = {2024}
+}
+
+@article{mishchenko-2023-prodigy,
+ abstract = {We consider the problem of estimating the learning rate in adaptive methods, such as AdaGrad and Adam. We propose Prodigy, an algorithm that provably estimates the distance to the solution $D$, which is needed to set the learning rate optimally. At its core, Prodigy is a modification of the D-Adaptation method for learning-rate-free learning. It improves upon the convergence rate of D-Adaptation by a factor of $O(\sqrt{\log(D/d_0)})$, where $d_0$ is the initial estimate of $D$. We test Prodigy on 12 common logistic-regression benchmark datasets, VGG11 and ResNet-50 training on CIFAR10, ViT training on Imagenet, LSTM training on IWSLT14, DLRM training on Criteo dataset, VarNet on Knee MRI dataset, as well as RoBERTa and GPT transformer training on BookWiki. Our experimental results show that our approach consistently outperforms D-Adaptation and reaches test accuracy values close to that of hand-tuned Adam.},
+ arxiv_url = {https://arxiv.org/pdf/2306.06101v4.pdf},
+ author = {Konstantin Mishchenko and Aaron Defazio},
+ github_url = {https://github.com/konstmish/prodigy},
+ title = {Prodigy: An Expeditiously Adaptive Parameter-Free Learner},
+ year = {2023}
+}
+
+@article{schaipp-2023-momo,
+ abstract = {Training a modern machine learning architecture on a new task requires extensive learning-rate tuning, which comes at a high computational cost. Here we develop new Polyak-type adaptive learning rates that can be used on top of any momentum method, and require less tuning to perform well. We first develop MoMo, a Momentum Model based adaptive learning rate for SGD-M (stochastic gradient descent with momentum). MoMo uses momentum estimates of the losses and gradients sampled at each iteration to build a model of the loss function. Our model makes use of any known lower bound of the loss function by using truncation, e.g. most losses are lower-bounded by zero. The model is then approximately minimized at each iteration to compute the next step. We show how MoMo can be used in combination with any momentum-based method, and showcase this by developing MoMo-Adam, which is Adam with our new model-based adaptive learning rate. We show that MoMo attains a $\mathcal{O}(1/\sqrt{K})$ convergence rate for convex problems with interpolation, needing knowledge of no problem-specific quantities other than the optimal value. Additionally, for losses with unknown lower bounds, we develop on-the-fly estimates of a lower bound, that are incorporated in our model. We show that MoMo and MoMo-Adam improve over SGD-M and Adam in terms of robustness to hyperparameter tuning for training image classifiers on MNIST, CIFAR, and Imagenet, for recommender systems on Criteo, for a transformer model on the translation task IWSLT14, and for a diffusion model.},
+ arxiv_url = {https://arxiv.org/pdf/2305.07583v3.pdf},
+ author = {Fabian Schaipp and Ruben Ohana and Michael Eickenberg and Aaron Defazio and Robert M. Gower},
+ title = {MoMo: Momentum Models for Adaptive Learning Rates},
+ year = {2023}
+}
+
+@article{shi-2022-language,
+ abstract = {We evaluate the reasoning abilities of large language models in multilingual settings. We introduce the Multilingual Grade School Math (MGSM) benchmark, by manually translating 250 grade-school math problems from the GSM8K dataset (Cobbe et al., 2021) into ten typologically diverse languages. We find that the ability to solve MGSM problems via chain-of-thought prompting emerges with increasing model scale, and that models have strikingly strong multilingual reasoning abilities, even in underrepresented languages such as Bengali and Swahili. Finally, we show that the multilingual reasoning abilities of language models extend to other tasks such as commonsense reasoning and word-in-context semantic judgment. The MGSM benchmark is publicly available at https://github.com/google-research/url-nlp.},
+ arxiv_url = {https://arxiv.org/pdf/2210.03057v1.pdf},
+ author = {Freda Shi and Mirac Suzgun and Markus Freitag and Xuezhi Wang and Suraj Srivats and Soroush Vosoughi and Hyung Won Chung and Yi Tay and Sebastian Ruder and Denny Zhou and Dipanjan Das and Jason Wei},
+ github_url = {https://github.com/cambridgeltl/xcopa},
+ title = {Language models are multilingual chain-of-thought reasoners},
+ year = {2022}
+}
+
+@article{shypula-2023-learning,
+ abstract = {With the decline of Moore's law, optimizing program performance has become a major focus of software research. However, high-level optimizations such as API and algorithm changes remain elusive due to the difficulty of understanding the semantics of code. Simultaneously, pretrained large language models (LLMs) have demonstrated strong capabilities at solving a wide range of programming tasks. To that end, we introduce a framework for adapting LLMs to high-level program optimization. First, we curate a dataset of performance-improving edits made by human programmers of over 77,000 competitive C++ programming submission pairs, accompanied by extensive unit tests. A major challenge is the significant variability of measuring performance on commodity hardware, which can lead to spurious "improvements." To isolate and reliably evaluate the impact of program optimizations, we design an environment based on the gem5 full system simulator, the de facto simulator used in academia and industry. Next, we propose a broad range of adaptation strategies for code optimization; for prompting, these include retrieval-based few-shot prompting and chain-of-thought, and for finetuning, these include performance-conditioned generation and synthetic data augmentation based on self-play. A combination of these techniques achieves a mean speedup of 6.86 with eight generations, higher than average optimizations from individual programmers (3.66). Using our model's fastest generations, we set a new upper limit on the fastest speedup possible for our dataset at 9.64 compared to using the fastest human submissions available (9.56).},
+ arxiv_url = {https://arxiv.org/pdf/2302.07867v5.pdf},
+ author = {Alexander Shypula and Aman Madaan and Yimeng Zeng and Uri Alon and Jacob Gardner and Milad Hashemi and Graham Neubig and Parthasarathy Ranganathan and Osbert Bastani and Amir Yazdanbakhsh},
+ github_url = {https://github.com/darchr/gem5-skylake-config},
+ title = {Learning Performance-Improving Code Edits},
+ year = {2023}
+}
+
+@article{toshniwal-2024-openmathinstruct,
+ abstract = {Recent work has shown the immense potential of synthetically generated datasets for training large language models (LLMs), especially for acquiring targeted skills. Current large-scale math instruction tuning datasets such as MetaMathQA (Yu et al., 2024) and MAmmoTH (Yue et al., 2024) are constructed using outputs from closed-source LLMs with commercially restrictive licenses. A key reason limiting the use of open-source LLMs in these data generation pipelines has been the wide gap between the mathematical skills of the best closed-source LLMs, such as GPT-4, and the best open-source LLMs. Building on the recent progress in open-source LLMs, our proposed prompting novelty, and some brute-force scaling, we construct OpenMathInstruct-1, a math instruction tuning dataset with 1.8M problem-solution pairs. The dataset is constructed by synthesizing code-interpreter solutions for GSM8K and MATH, two popular math reasoning benchmarks, using the recently released and permissively licensed Mixtral model. Our best model, OpenMath-CodeLlama-70B, trained on a subset of OpenMathInstruct-1, achieves a score of 84.6% on GSM8K and 50.7% on MATH, which is competitive with the best gpt-distilled models. We release our code, models, and the OpenMathInstruct-1 dataset under a commercially permissive license.},
+ arxiv_url = {https://arxiv.org/pdf/2402.10176v2.pdf},
+ author = {Shubham Toshniwal and Ivan Moshkov and Sean Narenthiran and Daria Gitman and Fei Jia and Igor Gitman},
+ github_url = {https://github.com/Kipok/NeMo-Skills},
+ title = {OpenMathInstruct-1: A 1.8 Million Math Instruction Tuning Dataset},
+ year = {2024}
+}
+
+@article{vlaar-2021-multirate,
+ abstract = {We propose multirate training of neural networks: partitioning neural network parameters into "fast" and "slow" parts which are trained on different time scales, where slow parts are updated less frequently. By choosing appropriate partitionings we can obtain substantial computational speed-up for transfer learning tasks. We show for applications in vision and NLP that we can fine-tune deep neural networks in almost half the time, without reducing the generalization performance of the resulting models. We analyze the convergence properties of our multirate scheme and draw a comparison with vanilla SGD. We also discuss splitting choices for the neural network parameters which could enhance generalization performance when neural networks are trained from scratch. A multirate approach can be used to learn different features present in the data and as a form of regularization. Our paper unlocks the potential of using multirate techniques for neural network training and provides several starting points for future work in this area.},
+ arxiv_url = {https://arxiv.org/pdf/2106.10771v4.pdf},
+ author = {Tiffany Vlaar and Benedict Leimkuhler},
+ journal = {Proceedings of the 39th International Conference on Machine Learning (ICML), PMLR 162, 2022},
+ title = {Multirate Training of Neural Networks},
+ year = {2021}
+}
+
+@article{xu-2023-lora,
+ abstract = {Recently years have witnessed a rapid development of large language models (LLMs). Despite the strong ability in many language-understanding tasks, the heavy computational burden largely restricts the application of LLMs especially when one needs to deploy them onto edge devices. In this paper, we propose a quantization-aware low-rank adaptation (QA-LoRA) algorithm. The motivation lies in the imbalanced degrees of freedom of quantization and adaptation, and the solution is to use group-wise operators which increase the degree of freedom of quantization meanwhile decreasing that of adaptation. QA-LoRA is easily implemented with a few lines of code, and it equips the original LoRA with two-fold abilities: (i) during fine-tuning, the LLM's weights are quantized (e.g., into INT4) to reduce time and memory usage; (ii) after fine-tuning, the LLM and auxiliary weights are naturally integrated into a quantized model without loss of accuracy. We apply QA-LoRA to the LLaMA and LLaMA2 model families and validate its effectiveness in different fine-tuning datasets and downstream scenarios. Code will be made available at https://github.com/yuhuixu1993/qa-lora.},
+ arxiv_url = {https://arxiv.org/pdf/2309.14717v2.pdf},
+ author = {Yuhui Xu and Lingxi Xie and Xiaotao Gu and Xin Chen and Heng Chang and Hengheng Zhang and Zhengsu Chen and Xiaopeng Zhang and Qi Tian},
+ title = {QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models},
+ year = {2023}
+}
+
+@article{zhang-2024-careful,
+ abstract = {Large language models (LLMs) have achieved impressive success on many benchmarks for mathematical reasoning. However, there is growing concern that some of this performance actually reflects dataset contamination, where data closely resembling benchmark questions leaks into the training data, instead of true reasoning ability. To investigate this claim rigorously, we commission Grade School Math 1000 (GSM1k). GSM1k is designed to mirror the style and complexity of the established GSM8k benchmark, the gold standard for measuring elementary mathematical reasoning. We ensure that the two benchmarks are comparable across important metrics such as human solve rates, number of steps in solution, answer magnitude, and more. When evaluating leading open- and closed-source LLMs on GSM1k, we observe accuracy drops of up to 8%, with several families of models showing evidence of systematic overfitting across almost all model sizes. Further analysis suggests a positive relationship (Spearman's r^2 = 0.36) between a model's probability of generating an example from GSM8k and its performance gap between GSM8k and GSM1k, suggesting that some models may have partially memorized GSM8k. Nevertheless, many models, especially those on the frontier, show minimal signs of overfitting, and all models broadly demonstrate generalization to novel math problems guaranteed to not be in their training data.},
+ arxiv_url = {https://arxiv.org/pdf/2405.00332v4.pdf},
+ author = {Hugh Zhang and Jeff Da and Dean Lee and Vaughn Robinson and Catherine Wu and Will Song and Tiffany Zhao and Pranav Raja and Charlotte Zhuang and Dylan Slack and Qin Lyu and Sean Hendryx and Russell Kaplan and Michele Lunati and Summer Yue},
+ title = {A Careful Examination of Large Language Model Performance on Grade School Arithmetic},
+ year = {2024}
+}
+
+@article{zheng-2023-response,
+ abstract = {Large language models (LLMs) have revolutionized the field of AI, demonstrating unprecedented capacity across various tasks. However, the inference process for LLMs comes with significant computational costs. In this paper, we propose an efficient LLM inference pipeline that harnesses the power of LLMs. Our approach begins by tapping into the potential of LLMs to accurately perceive and predict the response length with minimal overhead. By leveraging this information, we introduce an efficient sequence scheduling technique that groups queries with similar response lengths into micro-batches. We evaluate our approach on real-world instruction datasets using the LLaMA-based model, and our results demonstrate an impressive 86% improvement in inference throughput without compromising effectiveness. Notably, our method is orthogonal to other inference acceleration techniques, making it a valuable addition to many existing toolkits (e.g., FlashAttention, Quantization) for LLM inference.},
+ arxiv_url = {https://arxiv.org/pdf/2305.13144v2.pdf},
+ author = {Zangwei Zheng and Xiaozhe Ren and Fuzhao Xue and Yang Luo and Xin Jiang and Yang You},
+ github_url = {https://github.com/zhengzangw/Sequence-Scheduling},
+ title = {Response Length Perception and  Sequence Scheduling: An LLM-Empowered LLM Inference Pipeline},
+ year = {2023}
+}
+
+@article{zhu-2023-towards,
+ abstract = {Large Language Models (LLMs) and other large foundation models have achieved noteworthy success, but their size exacerbates existing resource consumption and latency challenges. In particular, the large-scale deployment of these models is hindered by the significant resource requirements during inference. In this paper, we study two approaches for mitigating these challenges: employing a cache to store previous queries and learning a model multiplexer to choose from an ensemble of models for query processing.
+  Theoretically, we provide an optimal algorithm for jointly optimizing both approaches to reduce the inference cost in both offline and online tabular settings. By combining a caching algorithm, namely Greedy Dual Size with Frequency (GDSF) or Least Expected Cost (LEC), with a model multiplexer, we achieve optimal rates in both offline and online settings. Empirically, simulations show that the combination of our caching and model multiplexing algorithms greatly improves over the baselines, with up to $50\times$ improvement over the baseline when the ratio between the maximum cost and minimum cost is $100$. Experiments on real datasets show a $4.3\times$ improvement in FLOPs over the baseline when the ratio for FLOPs is $10$, and a $1.8\times$ improvement in latency when the ratio for average latency is $1.85$.},
+ arxiv_url = {https://arxiv.org/pdf/2306.02003v2.pdf},
+ author = {Banghua Zhu and Ying Sheng and Lianmin Zheng and Clark Barrett and Michael I. Jordan and Jiantao Jiao},
+ github_url = {https://github.com/Ying1123/llm-caching-multiplexing},
+ title = {Towards Optimal Caching and Model Selection for Large Model Inference},
+ year = {2023}
+}
+
+% ===========================================
+% REFERENCE CANDIDATES
+% Additional reference papers for context
+% ===========================================
+
+@article{anil-2022-the,
+ abstract = {For industrial-scale advertising systems, prediction of ad click-through rate (CTR) is a central problem. Ad clicks constitute a significant class of user engagements and are often used as the primary signal for the usefulness of ads to users. Additionally, in cost-per-click advertising systems where advertisers are charged per click, click rate expectations feed directly into value estimation. Accordingly, CTR model development is a significant investment for most Internet advertising companies. Engineering for such problems requires many machine learning (ML) techniques suited to online learning that go well beyond traditional accuracy improvements, especially concerning efficiency, reproducibility, calibration, credit attribution. We present a case study of practical techniques deployed in Google's search ads CTR model. This paper provides an industry case study highlighting important areas of current ML research and illustrating how impactful new ML methods are evaluated and made useful in a large-scale industrial setting.},
+ arxiv_url = {https://arxiv.org/pdf/2209.05310v1.pdf},
+ author = {Rohan Anil and Sandra Gadanho and Da Huang and Nijith Jacob and Zhuoshu Li and Dong Lin and Todd Phillips and Cristina Pop and Kevin Regan and Gil I. Shamir and Rakesh Shivanna and Qiqi Yan},
+ title = {On the factory floor: ML engineering for industrial-scale ads recommendation models},
+ year = {2022}
+}
+
+@article{author-year-robust,
+ title = {A robust and interpretable end-to-end deep learning model for cytometry data}
+}
+
+@article{bedi-2017-tracking,
+ abstract = {Multi-agent systems are being increasingly deployed in challenging environments for performing complex tasks such as multi-target tracking, search-and-rescue, and intrusion detection. Notwithstanding the computational limitations of individual robots, such systems rely on collaboration to sense and react to the environment. This paper formulates the generic target tracking problem as a time-varying optimization problem and puts forth an inexact online gradient descent method for solving it sequentially. The performance of the proposed algorithm is studied by characterizing its dynamic regret, a notion common to the online learning literature. Building upon the existing results, we provide improved regret rates that not only allow non-strongly convex costs but also explicating the role of the cumulative gradient error. Two distinct classes of problems are considered: one in which the objective function adheres to a quadratic growth condition, and another where the objective function is convex but the variable belongs to a compact domain. For both cases, results are developed while allowing the error to be either adversarial or arising from a white noise process. Further, the generality of the proposed framework is demonstrated by developing online variants of existing stochastic gradient algorithms and interpreting them as special cases of the proposed inexact gradient method. The efficacy of the proposed inexact gradient framework is established on a multi-agent multi-target tracking problem, while its flexibility is exemplified by generating online movie recommendations for Movielens $10$M dataset.},
+ arxiv_url = {https://arxiv.org/pdf/1710.05133v2.pdf},
+ author = {Amrit Singh Bedi and Paban Sarma and Ketan Rajawat},
+ title = {Tracking moving agents via inexact online gradient descent algorithm},
+ year = {2017}
+}
+
+@article{bengio-2012-practical,
+ abstract = {Learning algorithms related to artificial neural networks and in particular for Deep Learning may seem to involve many bells and whistles, called hyper-parameters. This chapter is meant as a practical guide with recommendations for some of the most commonly used hyper-parameters, in particular in the context of learning algorithms based on back-propagated gradient and gradient-based optimization. It also discusses how to deal with the fact that more interesting results can be obtained when allowing one to adjust many hyper-parameters. Overall, it describes elements of the practice used to successfully and efficiently train and debug large-scale and often deep multi-layer neural networks. It closes with open questions about the training difficulties observed with deeper architectures.},
+ arxiv_url = {https://arxiv.org/pdf/1206.5533v2.pdf},
+ author = {Yoshua Bengio},
+ title = {Practical Recommendations for Gradient-Based Training of Deep Architectures},
+ year = {2012}
+}
+
+@article{besbes-2013-non,
+ abstract = {We consider a non-stationary variant of a sequential stochastic optimization problem, in which the underlying cost functions may change along the horizon. We propose a measure, termed variation budget, that controls the extent of said change, and study how restrictions on this budget impact achievable performance. We identify sharp conditions under which it is possible to achieve long-run-average optimality and more refined performance measures such as rate optimality that fully characterize the complexity of such problems. In doing so, we also establish a strong connection between two rather disparate strands of literature: adversarial online convex optimization; and the more traditional stochastic approximation paradigm (couched in a non-stationary setting). This connection is the key to deriving well performing policies in the latter, by leveraging structure of optimal policies in the former. Finally, tight bounds on the minimax regret allow us to quantify the "price of non-stationarity," which mathematically captures the added complexity embedded in a temporally changing environment versus a stationary one.},
+ arxiv_url = {https://arxiv.org/pdf/1307.5449v2.pdf},
+ author = {O. Besbes and Y. Gur and A. Zeevi},
+ doi = {10.1287/opre.2015.1408},
+ title = {Non-stationary stochastic optimization},
+ year = {2013}
+}
+
+@article{chaudhari-2017-deep,
+ abstract = {In this paper we establish a connection between non-convex optimization methods for training deep neural networks and nonlinear partial differential equations (PDEs). Relaxation techniques arising in statistical physics which have already been used successfully in this context are reinterpreted as solutions of a viscous Hamilton-Jacobi PDE. Using a stochastic control interpretation allows we prove that the modified algorithm performs better in expectation that stochastic gradient descent. Well-known PDE regularity results allow us to analyze the geometry of the relaxed energy landscape, confirming empirical evidence. The PDE is derived from a stochastic homogenization problem, which arises in the implementation of the algorithm. The algorithms scale well in practice and can effectively tackle the high dimensionality of modern neural networks.},
+ arxiv_url = {https://arxiv.org/pdf/1704.04932v2.pdf},
+ author = {Pratik Chaudhari and Adam Oberman and Stanley Osher and Stefano Soatto and Guillaume Carlier},
+ title = {Deep relaxation: Partial differential equations for optimizing deep neural networks},
+ year = {2017}
+}
+
+@article{coleman-2023-unified,
+ abstract = {Learning high-quality feature embeddings efficiently and effectively is critical for the performance of web-scale machine learning systems. A typical model ingests hundreds of features with vocabularies on the order of millions to billions of tokens. The standard approach is to represent each feature value as a d-dimensional embedding, introducing hundreds of billions of parameters for extremely high-cardinality features. This bottleneck has led to substantial progress in alternative embedding algorithms. Many of these methods, however, make the assumption that each feature uses an independent embedding table. This work introduces a simple yet highly effective framework, Feature Multiplexing, where one single representation space is used across many different categorical features. Our theoretical and empirical analysis reveals that multiplexed embeddings can be decomposed into components from each constituent feature, allowing models to distinguish between features. We show that multiplexed representations lead to Pareto-optimal parameter-accuracy tradeoffs for three public benchmark datasets. Further, we propose a highly practical approach called Unified Embedding with three major benefits: simplified feature configuration, strong adaptation to dynamic data distributions, and compatibility with modern hardware. Unified embedding gives significant improvements in offline and online metrics compared to highly competitive baselines across five web-scale search, ads, and recommender systems, where it serves billions of users across the world in industry-leading products.},
+ arxiv_url = {https://arxiv.org/pdf/2305.12102v3.pdf},
+ author = {Benjamin Coleman and Wang-Cheng Kang and Matthew Fahrbach and Ruoxi Wang and Lichan Hong and Ed H. Chi and Derek Zhiyuan Cheng},
+ journal = {Proceedings of the 37th Annual Conference on Neural Information Processing Systems (NeurIPS 2023) 56234-56255},
+ title = {Unified Embedding: Battle-tested feature representations for web-scale ML systems},
+ year = {2023}
+}
+
+@article{ge-2019-the,
+ abstract = {Minimax optimal convergence rates for classes of stochastic convex optimization problems are well characterized, where the majority of results utilize iterate averaged stochastic gradient descent (SGD) with polynomially decaying step sizes. In contrast, SGD's final iterate behavior has received much less attention despite their widespread use in practice. Motivated by this observation, this work provides a detailed study of the following question: what rate is achievable using the final iterate of SGD for the streaming least squares regression problem with and without strong convexity?
+  First, this work shows that even if the time horizon T (i.e. the number of iterations SGD is run for) is known in advance, SGD's final iterate behavior with any polynomially decaying learning rate scheme is highly sub-optimal compared to the minimax rate (by a condition number factor in the strongly convex case and a factor of $\sqrt{T}$ in the non-strongly convex case). In contrast, this paper shows that Step Decay schedules, which cut the learning rate by a constant factor every constant number of epochs (i.e., the learning rate decays geometrically) offers significant improvements over any polynomially decaying step sizes. In particular, the final iterate behavior with a step decay schedule is off the minimax rate by only $log$ factors (in the condition number for strongly convex case, and in T for the non-strongly convex case). Finally, in stark contrast to the known horizon case, this paper shows that the anytime (i.e. the limiting) behavior of SGD's final iterate is poor (in that it queries iterates with highly sub-optimal function value infinitely often, i.e. in a limsup sense) irrespective of the stepsizes employed. These results demonstrate the subtlety in establishing optimal learning rate schemes (for the final iterate) for stochastic gradient procedures in fixed time horizon settings.},
+ arxiv_url = {https://arxiv.org/pdf/1904.12838v2.pdf},
+ author = {Rong Ge and Sham M. Kakade and Rahul Kidambi and Praneeth Netrapalli},
+ title = {The step decay schedule: A near optimal, geometrically decaying learning rate procedure for least squares},
+ year = {2019}
+}
+
+@article{jadbabaie-2015-online,
+ abstract = {Recent literature on online learning has focused on developing adaptive algorithms that take advantage of a regularity of the sequence of observations, yet retain worst-case performance guarantees. A complementary direction is to develop prediction methods that perform well against complex benchmarks. In this paper, we address these two directions together. We present a fully adaptive method that competes with dynamic benchmarks in which regret guarantee scales with regularity of the sequence of cost functions and comparators. Notably, the regret bound adapts to the smaller complexity measure in the problem environment. Finally, we apply our results to drifting zero-sum, two-player games where both players achieve no regret guarantees against best sequences of actions in hindsight.},
+ arxiv_url = {https://arxiv.org/pdf/1501.06225v1.pdf},
+ author = {Ali Jadbabaie and Alexander Rakhlin and Shahin Shahrampour and Karthik Sridharan},
+ title = {Online optimization: Competing with dynamic comparators},
+ year = {2015}
+}
+
+@article{jain-2019-making,
+ abstract = {Stochastic gradient descent (SGD) is one of the most widely used algorithms for large scale optimization problems. While classical theoretical analysis of SGD for convex problems studies (suffix) \emph{averages} of iterates and obtains information theoretically optimal bounds on suboptimality, the \emph{last point} of SGD is, by far, the most preferred choice in practice. The best known results for last point of SGD \cite{shamir2013stochastic} however, are suboptimal compared to information theoretic lower bounds by a $\log T$ factor, where $T$ is the number of iterations. \cite{harvey2018tight} shows that in fact, this additional $\log T$ factor is tight for standard step size sequences of $\OTheta{\frac{1}{\sqrt{t}}}$ and $\OTheta{\frac{1}{t}}$ for non-strongly convex and strongly convex settings, respectively. Similarly, even for subgradient descent (GD) when applied to non-smooth, convex functions, the best known step-size sequences still lead to $O(\log T)$-suboptimal convergence rates (on the final iterate). The main contribution of this work is to design new step size sequences that enjoy information theoretically optimal bounds on the suboptimality of \emph{last point} of SGD as well as GD. We achieve this by designing a modification scheme, that converts one sequence of step sizes to another so that the last point of SGD/GD with modified sequence has the same suboptimality guarantees as the average of SGD/GD with original sequence. We also show that our result holds with high-probability. We validate our results through simulations which demonstrate that the new step size sequence indeed improves the final iterate significantly compared to the standard step size sequences.},
+ arxiv_url = {https://arxiv.org/pdf/1904.12443v2.pdf},
+ author = {Prateek Jain and Dheeraj Nagaraj and Praneeth Netrapalli},
+ title = {Making the last iterate of SGD information theoretically optimal},
+ year = {2019}
+}
