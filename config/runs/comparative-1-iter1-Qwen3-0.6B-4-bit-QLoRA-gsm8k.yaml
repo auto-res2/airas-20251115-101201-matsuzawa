@@ -2,7 +2,7 @@ run_id: comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k
 method: comparative-1
 method_description: 'CAMEO adaptive learning rate baseline'
 model:
-  name: Qwen3-0.6B
+  name: Qwen/Qwen2.5-0.5B
   quantization: 4bit
   precision: bf16
   lora:
