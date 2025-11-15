@@ -663,6 +663,68 @@
       }
     }
   ],
+  "reference_research_study_list": [
+    {
+      "title": "TensorFlow: A system for large-scale machine learning"
+    },
+    {
+      "title": "On the factory floor: ML engineering for industrial-scale ads recommendation models"
+    },
+    {
+      "title": "Comprehensive single cell mRNA profiling reveals a detailed roadmap for pancreatic endocrinogenesis"
+    },
+    {
+      "title": "Tracking moving agents via inexact online gradient descent algorithm"
+    },
+    {
+      "title": "Dynamic programming and lagrange multipliers"
+    },
+    {
+      "title": "Practical Recommendations for Gradient-Based Training of Deep Architectures"
+    },
+    {
+      "title": "Generalizing RNA velocity to transient cell states through dynamical modeling"
+    },
+    {
+      "title": "Non-stationary stochastic optimization"
+    },
+    {
+      "title": "Deep relaxation: Partial differential equations for optimizing deep neural networks"
+    },
+    {
+      "title": "Keras"
+    },
+    {
+      "title": "Unified Embedding: Battle-tested feature representations for web-scale ML systems"
+    },
+    {
+      "title": "Statistical methods with varying coefficient models"
+    },
+    {
+      "title": "Online bootstrap confidence intervals for the stochastic gradient descent estimator"
+    },
+    {
+      "title": "The step decay schedule: A near optimal, geometrically decaying learning rate procedure for least squares"
+    },
+    {
+      "title": "Note on the derivatives with respect to a parameter of the solutions of a system of differential equations"
+    },
+    {
+      "title": "Varying-coefficient models"
+    },
+    {
+      "title": "A robust and interpretable end-to-end deep learning model for cytometry data"
+    },
+    {
+      "title": "Application of machine learning for cytometry data"
+    },
+    {
+      "title": "Online optimization: Competing with dynamic comparators"
+    },
+    {
+      "title": "Making the last iterate of SGD information theoretically optimal"
+    }
+  ],
   "evaluated_hypothesis_history": [
     {
       "hypothesis": {
