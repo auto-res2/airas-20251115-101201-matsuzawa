@@ -21,9 +21,14 @@ class Preprocessor:
 
     def _build(self) -> None:
         name = self.cfg.dataset.name
+        config_name = self.cfg.dataset.get("config", None)
         cache_dir = ".cache/"
-        ds_train = load_dataset(name, split=self.cfg.dataset.split, cache_dir=cache_dir)
-        ds_eval = load_dataset(name, split=self.cfg.dataset.get("eval_split", "validation"), cache_dir=cache_dir)
+        if config_name:
+            ds_train = load_dataset(name, config_name, split=self.cfg.dataset.split, cache_dir=cache_dir)
+            ds_eval = load_dataset(name, config_name, split=self.cfg.dataset.get("eval_split", "validation"), cache_dir=cache_dir)
+        else:
+            ds_train = load_dataset(name, split=self.cfg.dataset.split, cache_dir=cache_dir)
+            ds_eval = load_dataset(name, split=self.cfg.dataset.get("eval_split", "validation"), cache_dir=cache_dir)
 
         if self.cfg.mode == "trial":  # tiny subset
             ds_train = ds_train.shuffle(seed=42).select(range(8))

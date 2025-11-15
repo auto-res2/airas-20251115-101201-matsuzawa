@@ -19,6 +19,7 @@ model:
       - down_proj
 dataset:
   name: gsm8k
+  config: main
   split: train
   eval_split: test
   preprocessing:
