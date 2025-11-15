@@ -1,0 +1,64 @@
+run_id: comparative-1-iter1-Qwen3-0.6B-4-bit-QLoRA-gsm8k
+method: comparative-1
+method_description: 'CAMEO adaptive learning rate baseline'
+model:
+  name: Qwen3-0.6B
+  quantization: 4bit
+  precision: bf16
+  lora:
+    r: 16
+    alpha: 32
+    dropout: 0.05
+    target_modules:
+      - q_proj
+      - k_proj
+      - v_proj
+      - o_proj
+      - gate_proj
+      - up_proj
+      - down_proj
+dataset:
+  name: gsm8k
+  split: train
+  eval_split: test
+  preprocessing:
+    max_length: 1024
+    padding: false
+training:
+  total_updates: 500
+  per_device_batch_size: 4
+  gradient_accumulation_steps: 4
+  effective_batch_size: 16
+  optimizer: adamw_bnb_8bit
+  base_lr: 1.0e-4
+  weight_decay: 0.0
+  warmup_steps: 0
+  lr_scheduler: constant
+  max_grad_norm: 1.0
+  gradient_checkpointing: true
+  bf16: true
+cameo:
+  beta: 0.9
+  init_lr_scale: 1.0
+  hutchinson_probes: 32
+  safety_gershgorin: true
+optuna:
+  n_trials: 40
+  direction: maximize
+  search_space:
+    lora.r:
+      type: categorical
+      choices: [8, 16, 32, 64]
+    cameo.beta:
+      type: loguniform
+      low: 0.5
+      high: 0.99
+    cameo.init_lr_scale:
+      type: loguniform
+      low: 0.5
+      high: 2.0
+    training.per_device_batch_size:
+      type: categorical
+      choices: [4, 8]
+notes: |
+  CAMEO baseline uses Hutchinson probes for curvature estimation and Gershgorin safety checks.
